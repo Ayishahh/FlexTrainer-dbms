@@ -1,0 +1,23 @@
+# Handle line endings automatically for files detected as text
+# and leave binary files untouched.
+* text=auto
+
+# Explicitly declare text files to ensure they are normalized.
+# This ensures that these files are converted to LF in the repo,
+# but checked out as CRLF on Windows and LF on Mac.
+*.cs text
+*.sln text eol=crlf
+*.csproj text
+*.config text
+*.xml text
+*.sql text
+*.md text
+*.txt text
+*.json text
+
+# Binary files
+*.dll binary
+*.exe binary
+*.pdb binary
+*.suo binary
+*.user binary
