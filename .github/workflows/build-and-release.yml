@@ -1,0 +1,79 @@
+name: Build & Release Flex-Trainer
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 6
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore src/Flex-Trainer.csproj
+
+      - name: Publish self-contained app
+        run: |
+          dotnet publish src/Flex-Trainer.csproj `
+            --configuration Release `
+            --runtime win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:EnableCompressionInSingleFile=true `
+            --output ./publish
+
+      - name: Copy App.config to publish folder
+        run: |
+          Copy-Item "src/App.config" -Destination "./publish/Flex-Trainer.dll.config" -Force -ErrorAction SilentlyContinue
+
+      - name: Create release zip
+        run: Compress-Archive -Path ./publish/* -DestinationPath ./FlexTrainer-win-x64.zip
+
+      - name: Generate version tag
+        id: version
+        run: |
+          $date = Get-Date -Format "yyyy.MM.dd"
+          $sha = "${{ github.sha }}".Substring(0,7)
+          $tag = "v${date}-${sha}"
+          echo "TAG=$tag" >> $env:GITHUB_OUTPUT
+          echo "Generated tag: $tag"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.TAG }}
+          name: "Flex-Trainer ${{ steps.version.outputs.TAG }}"
+          body: |
+            ## Flex-Trainer -- Portable Build
+
+            **How to use:**
+            1. Download `FlexTrainer-win-x64.zip` below
+            2. Extract the zip to any folder
+            3. Run `Flex-Trainer.exe`
+            4. When prompted, enter the IP address of your SQL Server
+
+            > **No Visual Studio or .NET installation required.**
+            > This is a fully self-contained build for Windows x64.
+
+            **Note:** You need a running SQL Server instance with the database.
+            The app will ask for the server IP address on startup.
+            You can also edit `Flex-Trainer.dll.config` to set the connection string manually.
+
+            ---
+            Built from commit: ${{ github.sha }}
+          files: ./FlexTrainer-win-x64.zip
+          draft: false
+          prerelease: false
