@@ -325,8 +325,13 @@ GO
 
 CREATE TABLE System_Log(
     Log_ID INT IDENTITY(1,1) PRIMARY KEY,
-    Log_date DATE NOT NULL,
-    Log_description VARCHAR(255) NOT NULL
+    Log_date DATETIME NOT NULL DEFAULT GETDATE(),
+    Activity_type VARCHAR(50) DEFAULT 'SYSTEM',
+    Table_affected VARCHAR(50),
+    Record_ID INT,
+    User_ID INT,
+    Log_description VARCHAR(255),
+    FOREIGN KEY (User_ID) REFERENCES Users(User_ID)
 );
 GO
 

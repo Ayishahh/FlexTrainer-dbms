@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Data.OleDb;
 using System.IO;
 
-namespace DB_phase2_project
+namespace FlexTrainer
 {
     public partial class ExcelImport : Form
     {

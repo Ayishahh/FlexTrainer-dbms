@@ -1,8 +1,10 @@
 using System;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.Security.Cryptography;
+using System.Text;
 
-namespace DB_phase2_project
+namespace FlexTrainer
 {
     /// <summary>
     /// Centralized database connection helper class.
@@ -26,22 +28,31 @@ namespace DB_phase2_project
                     {
                         // Try to load from App.config
                         var connString = ConfigurationManager.ConnectionStrings["FlexTrainerDB"];
-                        if (connString != null)
+                        if (connString != null && !string.IsNullOrEmpty(connString.ConnectionString))
                         {
                             _connectionString = connString.ConnectionString;
+                            System.Diagnostics.Debug.WriteLine("Connection string loaded from App.config");
                         }
                         else
                         {
                             // Default fallback for Docker setup
                             _connectionString = "Data Source=localhost,1433;Initial Catalog=DB_PROJECT;User ID=sa;Password=FlexTrainer2024!;TrustServerCertificate=True";
+                            System.Diagnostics.Debug.WriteLine("Using default connection string (App.config not found)");
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         // Fallback if ConfigurationManager fails
                         _connectionString = "Data Source=localhost,1433;Initial Catalog=DB_PROJECT;User ID=sa;Password=FlexTrainer2024!;TrustServerCertificate=True";
+                        System.Diagnostics.Debug.WriteLine($"ConfigurationManager error: {ex.Message}. Using default connection string.");
                     }
                 }
+                
+                if (string.IsNullOrEmpty(_connectionString))
+                {
+                    throw new InvalidOperationException("Connection string could not be initialized. Check App.config or DatabaseHelper configuration.");
+                }
+                
                 return _connectionString;
             }
         }
@@ -74,6 +85,48 @@ namespace DB_phase2_project
                 System.Diagnostics.Debug.WriteLine($"Database connection failed: {ex.Message}");
                 return false;
             }
+        }
+    }
+
+    /// <summary>
+    /// Password hashing helper for secure password storage.
+    /// Uses SHA256 hashing algorithm.
+    /// </summary>
+    public static class PasswordHelper
+    {
+        /// <summary>
+        /// Hashes a password using SHA256.
+        /// </summary>
+        /// <param name="password">Plain text password</param>
+        /// <returns>Base64 encoded hash</returns>
+        public static string HashPassword(string password)
+        {
+            if (string.IsNullOrEmpty(password))
+                throw new ArgumentNullException(nameof(password));
+
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return Convert.ToBase64String(bytes);
+            }
+        }
+
+        /// <summary>
+        /// Verifies a password against a hash.
+        /// </summary>
+        /// <param name="password">Plain text password to verify</param>
+        /// <param name="hash">Stored hash to compare against</param>
+        /// <returns>True if password matches hash</returns>
+        public static bool VerifyPassword(string password, string hash)
+        {
+            if (string.IsNullOrEmpty(password))
+                return false;
+
+            if (string.IsNullOrEmpty(hash))
+                return false;
+
+            string hashOfInput = HashPassword(password);
+            return StringComparer.OrdinalIgnoreCase.Compare(hashOfInput, hash) == 0;
         }
     }
 }

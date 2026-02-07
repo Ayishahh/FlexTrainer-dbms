@@ -1,4 +1,4 @@
-﻿namespace DB_phase2_project
+﻿namespace FlexTrainer
 {
     partial class MemberDashboard
     {
@@ -1445,7 +1445,7 @@
             button3.Name = "button3";
             button3.Size = new Size(182, 51);
             button3.TabIndex = 0;
-            button3.Text = "Add to plan!";
+            button3.Text = "Add meal to plan!";
             button3.UseVisualStyleBackColor = true;
             button3.Click += button3_Click;
             // 
@@ -1965,7 +1965,7 @@
             button4.Name = "button4";
             button4.Size = new Size(182, 51);
             button4.TabIndex = 1;
-            button4.Text = "Add to plan!";
+            button4.Text = "Add exercise to plan!";
             button4.UseVisualStyleBackColor = true;
             button4.Click += button4_Click;
             // 

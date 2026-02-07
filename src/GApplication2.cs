@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace DB_phase2_project
+namespace FlexTrainer
 {
     public partial class GApplication2 : Form
     {

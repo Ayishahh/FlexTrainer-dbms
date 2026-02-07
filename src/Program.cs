@@ -1,6 +1,6 @@
 using Project;
 
-namespace DB_phase2_project
+namespace FlexTrainer
 {
     internal static class Program
     {
