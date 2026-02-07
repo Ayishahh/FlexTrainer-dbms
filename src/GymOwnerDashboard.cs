@@ -124,7 +124,6 @@ namespace FlexTrainer
                     textBox18.Text = textBox25.Text = LogIn.USER_NAME;
                     textBox19.Text = reader1["User_ID"].ToString();
                     textBox24.Text = reader1["email"].ToString();
-                    textBox23.Text = reader1["Password"].ToString();
                     textBox22.Text = reader1["DOB"].ToString();
                     textBox20.Text = reader1["First_name"].ToString();
                     textBox26.Text = reader1["Last_name"].ToString();

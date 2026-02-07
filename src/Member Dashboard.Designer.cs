@@ -184,6 +184,9 @@
             label49 = new Label();
             label6 = new Label();
             pictureBox1 = new PictureBox();
+            tabPageReports = new TabPage();
+            btnViewReports = new Button();
+            lblReportsTitle = new Label();
             k = new TabControl();
             tabPage6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
@@ -228,6 +231,7 @@
             splitContainer3.Panel2.SuspendLayout();
             splitContainer3.SuspendLayout();
             tabPage1.SuspendLayout();
+            tabPageReports.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             k.SuspendLayout();
             SuspendLayout();
@@ -438,6 +442,7 @@
             label92.Size = new Size(91, 32);
             label92.TabIndex = 10;
             label92.Text = "label92";
+            label92.Visible = false;
             // 
             // label91
             // 
@@ -519,6 +524,7 @@
             label10.Size = new Size(111, 32);
             label10.TabIndex = 2;
             label10.Text = "Password";
+            label10.Visible = false;
             // 
             // label9
             // 
@@ -2026,6 +2032,41 @@
             pictureBox1.TabIndex = 3;
             pictureBox1.TabStop = false;
             // 
+            // tabPageReports
+            // 
+            tabPageReports.Controls.Add(btnViewReports);
+            tabPageReports.Controls.Add(lblReportsTitle);
+            tabPageReports.Location = new Point(4, 34);
+            tabPageReports.Margin = new Padding(5, 5, 5, 5);
+            tabPageReports.Name = "tabPageReports";
+            tabPageReports.Padding = new Padding(5, 5, 5, 5);
+            tabPageReports.Size = new Size(1516, 744);
+            tabPageReports.TabIndex = 6;
+            tabPageReports.Text = "Reports";
+            tabPageReports.UseVisualStyleBackColor = true;
+            // 
+            // lblReportsTitle
+            // 
+            lblReportsTitle.AutoSize = true;
+            lblReportsTitle.Font = new Font("Segoe UI Black", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
+            lblReportsTitle.Location = new Point(5, 5);
+            lblReportsTitle.Margin = new Padding(5, 0, 5, 0);
+            lblReportsTitle.Name = "lblReportsTitle";
+            lblReportsTitle.Size = new Size(400, 50);
+            lblReportsTitle.TabIndex = 0;
+            lblReportsTitle.Text = "View Reports";
+            // 
+            // btnViewReports
+            // 
+            btnViewReports.Location = new Point(5, 70);
+            btnViewReports.Margin = new Padding(5, 5, 5, 5);
+            btnViewReports.Name = "btnViewReports";
+            btnViewReports.Size = new Size(250, 51);
+            btnViewReports.TabIndex = 1;
+            btnViewReports.Text = "Open Reports";
+            btnViewReports.UseVisualStyleBackColor = true;
+            btnViewReports.Click += btnViewReports_Click;
+            // 
             // k
             // 
             k.Appearance = TabAppearance.FlatButtons;
@@ -2034,6 +2075,7 @@
             k.Controls.Add(tabPage3);
             k.Controls.Add(tabPage4);
             k.Controls.Add(tabPage5);
+            k.Controls.Add(tabPageReports);
             k.Controls.Add(tabPage6);
             k.Cursor = Cursors.Cross;
             k.ItemSize = new Size(90, 30);
@@ -2117,6 +2159,8 @@
             splitContainer3.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             tabPage1.PerformLayout();
+            tabPageReports.ResumeLayout(false);
+            tabPageReports.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             k.ResumeLayout(false);
             ResumeLayout(false);
@@ -2280,5 +2324,8 @@
         private Label label90;
         private Label label97;
         private Label label96;
+        private TabPage tabPageReports;
+        private Button btnViewReports;
+        private Label lblReportsTitle;
     }
 }

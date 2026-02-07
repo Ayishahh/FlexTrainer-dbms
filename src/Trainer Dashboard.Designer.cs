@@ -168,6 +168,9 @@
             label2 = new Label();
             label1 = new Label();
             tabPage6 = new TabPage();
+            tabPageReports = new TabPage();
+            btnViewReports = new Button();
+            lblReportsTitle = new Label();
             splitContainer1 = new SplitContainer();
             label7 = new Label();
             pictureBox5 = new PictureBox();
@@ -235,6 +238,7 @@
             tabPage5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
             tabPage6.SuspendLayout();
+            tabPageReports.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -261,6 +265,7 @@
             k.Controls.Add(tabPage3);
             k.Controls.Add(tabPage4);
             k.Controls.Add(tabPage5);
+            k.Controls.Add(tabPageReports);
             k.Controls.Add(tabPage6);
             k.Cursor = Cursors.Cross;
             k.ItemSize = new Size(90, 30);
@@ -2025,6 +2030,7 @@
             label9.Size = new Size(78, 32);
             label9.TabIndex = 20;
             label9.Text = "label9";
+            label9.Visible = false;
             // 
             // label96
             // 
@@ -2035,6 +2041,7 @@
             label96.Size = new Size(111, 32);
             label96.TabIndex = 15;
             label96.Text = "Password";
+            label96.Visible = false;
             // 
             // label10
             // 
@@ -2124,6 +2131,41 @@
             comboBox15.Size = new Size(273, 40);
             comboBox15.TabIndex = 19;
             // 
+            // tabPageReports
+            // 
+            tabPageReports.Controls.Add(btnViewReports);
+            tabPageReports.Controls.Add(lblReportsTitle);
+            tabPageReports.Location = new Point(4, 34);
+            tabPageReports.Margin = new Padding(5, 5, 5, 5);
+            tabPageReports.Name = "tabPageReports";
+            tabPageReports.Padding = new Padding(5, 5, 5, 5);
+            tabPageReports.Size = new Size(1516, 744);
+            tabPageReports.TabIndex = 7;
+            tabPageReports.Text = "Reports";
+            tabPageReports.UseVisualStyleBackColor = true;
+            // 
+            // lblReportsTitle
+            // 
+            lblReportsTitle.AutoSize = true;
+            lblReportsTitle.Font = new Font("Segoe UI Black", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
+            lblReportsTitle.Location = new Point(5, 5);
+            lblReportsTitle.Margin = new Padding(5, 0, 5, 0);
+            lblReportsTitle.Name = "lblReportsTitle";
+            lblReportsTitle.Size = new Size(400, 50);
+            lblReportsTitle.TabIndex = 0;
+            lblReportsTitle.Text = "View Reports";
+            // 
+            // btnViewReports
+            // 
+            btnViewReports.Location = new Point(5, 70);
+            btnViewReports.Margin = new Padding(5, 5, 5, 5);
+            btnViewReports.Name = "btnViewReports";
+            btnViewReports.Size = new Size(250, 51);
+            btnViewReports.TabIndex = 1;
+            btnViewReports.Text = "Open Reports";
+            btnViewReports.UseVisualStyleBackColor = true;
+            btnViewReports.Click += btnViewReports_Click;
+            // 
             // TrainerDashboard
             // 
             AutoScaleDimensions = new SizeF(13F, 32F);
@@ -2195,6 +2237,8 @@
             tabPage5.ResumeLayout(false);
             tabPage5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).EndInit();
+            tabPageReports.ResumeLayout(false);
+            tabPageReports.PerformLayout();
             tabPage6.ResumeLayout(false);
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel1.PerformLayout();
@@ -2373,5 +2417,8 @@
         private Label label101;
         private Label label100;
         private Label label99;
+        private TabPage tabPageReports;
+        private Button btnViewReports;
+        private Label lblReportsTitle;
     }
 }

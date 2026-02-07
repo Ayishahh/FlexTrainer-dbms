@@ -149,6 +149,9 @@
             pictureBox1 = new PictureBox();
             k = new TabControl();
             tabPage7 = new TabPage();
+            tabPageReports = new TabPage();
+            btnViewReports = new Button();
+            lblReportsTitle = new Label();
             splitContainer2 = new SplitContainer();
             textBox19 = new TextBox();
             textBox18 = new TextBox();
@@ -184,6 +187,7 @@
             tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             k.SuspendLayout();
+            tabPageReports.SuspendLayout();
             tabPage7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer2).BeginInit();
             splitContainer2.Panel1.SuspendLayout();
@@ -1534,6 +1538,7 @@
             k.Controls.Add(tabPage3);
             k.Controls.Add(tabPage4);
             k.Controls.Add(tabPage6);
+            k.Controls.Add(tabPageReports);
             k.Controls.Add(tabPage7);
             k.Cursor = Cursors.Cross;
             k.ItemSize = new Size(90, 30);
@@ -1711,6 +1716,7 @@
             textBox23.Name = "textBox23";
             textBox23.Size = new Size(288, 39);
             textBox23.TabIndex = 42;
+            textBox23.Visible = false;
             // 
             // textBox24
             // 
@@ -1757,6 +1763,7 @@
             label51.Size = new Size(116, 32);
             label51.TabIndex = 38;
             label51.Text = "Password:";
+            label51.Visible = false;
             // 
             // label52
             // 
@@ -1777,6 +1784,41 @@
             label53.Size = new Size(126, 32);
             label53.TabIndex = 36;
             label53.Text = "Username:";
+            // 
+            // tabPageReports
+            // 
+            tabPageReports.Controls.Add(btnViewReports);
+            tabPageReports.Controls.Add(lblReportsTitle);
+            tabPageReports.Location = new Point(4, 34);
+            tabPageReports.Margin = new Padding(5, 5, 5, 5);
+            tabPageReports.Name = "tabPageReports";
+            tabPageReports.Padding = new Padding(5, 5, 5, 5);
+            tabPageReports.Size = new Size(1516, 744);
+            tabPageReports.TabIndex = 8;
+            tabPageReports.Text = "Reports";
+            tabPageReports.UseVisualStyleBackColor = true;
+            // 
+            // lblReportsTitle
+            // 
+            lblReportsTitle.AutoSize = true;
+            lblReportsTitle.Font = new Font("Segoe UI Black", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
+            lblReportsTitle.Location = new Point(5, 5);
+            lblReportsTitle.Margin = new Padding(5, 0, 5, 0);
+            lblReportsTitle.Name = "lblReportsTitle";
+            lblReportsTitle.Size = new Size(400, 50);
+            lblReportsTitle.TabIndex = 0;
+            lblReportsTitle.Text = "View Reports";
+            // 
+            // btnViewReports
+            // 
+            btnViewReports.Location = new Point(5, 70);
+            btnViewReports.Margin = new Padding(5, 5, 5, 5);
+            btnViewReports.Name = "btnViewReports";
+            btnViewReports.Size = new Size(250, 51);
+            btnViewReports.TabIndex = 1;
+            btnViewReports.Text = "Open Reports";
+            btnViewReports.UseVisualStyleBackColor = true;
+            btnViewReports.Click += btnViewReports_Click;
             // 
             // GymOwnerDashboard
             // 
@@ -1809,6 +1851,8 @@
             tabPage1.ResumeLayout(false);
             tabPage1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            tabPageReports.ResumeLayout(false);
+            tabPageReports.PerformLayout();
             k.ResumeLayout(false);
             tabPage7.ResumeLayout(false);
             splitContainer2.Panel1.ResumeLayout(false);
@@ -1964,5 +2008,8 @@
         private Label label80;
         private Label label81;
         private Label label82;
+        private TabPage tabPageReports;
+        private Button btnViewReports;
+        private Label lblReportsTitle;
     }
 }

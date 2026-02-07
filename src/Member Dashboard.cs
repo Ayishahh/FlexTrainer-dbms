@@ -187,7 +187,7 @@ namespace FlexTrainer
 
                 }
 
-                string main_q = "SELECT User_ID, First_name, Last_name , email, Password, DOB, Role, Gym.gym_name, Membership.Membership_name, Membership.Membership_duration, Membership.Membership_charges FROM Users JOIN Member ON Users.User_ID = Member.Member_ID JOIN Gym ON Member.Gym_ID = Gym.Gym_ID JOIN Membership ON Member.Membership_ID = Membership.Membership_ID WHERE Username = @Username"; // displaying info of meal
+                string main_q = "SELECT User_ID, First_name, Last_name , email, DOB, Role, Gym.gym_name, Membership.Membership_name, Membership.Membership_duration, Membership.Membership_charges FROM Users JOIN Member ON Users.User_ID = Member.Member_ID JOIN Gym ON Member.Gym_ID = Gym.Gym_ID JOIN Membership ON Member.Membership_ID = Membership.Membership_ID WHERE Username = @Username";
                 SqlCommand cm1 = new SqlCommand(main_q, conn);
                 cm1.Parameters.AddWithValue("@Username", LogIn.USER_NAME);
                 SqlDataReader reader1 = cm1.ExecuteReader();
@@ -198,7 +198,6 @@ namespace FlexTrainer
                     label89.Text = reader1["User_ID"].ToString();
                     label90.Text = LogIn.USER_NAME;
                     label91.Text = reader1["Email"].ToString();
-                    label92.Text = reader1["Password"].ToString();
                     label93.Text = reader1["DOB"].ToString();
                     label94.Text = reader1["gym_name"].ToString();
                     label95.Text = reader1["Membership_name"].ToString();

@@ -156,6 +156,9 @@
             label6 = new Label();
             pictureBox1 = new PictureBox();
             AdminTab = new TabControl();
+            tabPageReports = new TabPage();
+            btnViewReports = new Button();
+            lblReportsTitle = new Label();
             tabPage20.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
             tabPage15.SuspendLayout();
@@ -195,6 +198,7 @@
             splitContainer7.Panel2.SuspendLayout();
             splitContainer7.SuspendLayout();
             Home.SuspendLayout();
+            tabPageReports.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             AdminTab.SuspendLayout();
             SuspendLayout();
@@ -1653,12 +1657,48 @@
             AdminTab.Controls.Add(tabPage14);
             AdminTab.Controls.Add(tabPage15);
             AdminTab.Controls.Add(tabPage20);
+            AdminTab.Controls.Add(tabPageReports);
             AdminTab.Location = new Point(3, 67);
             AdminTab.Margin = new Padding(6, 6, 6, 6);
             AdminTab.Name = "AdminTab";
             AdminTab.SelectedIndex = 0;
             AdminTab.Size = new Size(1524, 778);
             AdminTab.TabIndex = 0;
+            // 
+            // tabPageReports
+            // 
+            tabPageReports.Controls.Add(btnViewReports);
+            tabPageReports.Controls.Add(lblReportsTitle);
+            tabPageReports.Location = new Point(4, 34);
+            tabPageReports.Margin = new Padding(5, 5, 5, 5);
+            tabPageReports.Name = "tabPageReports";
+            tabPageReports.Padding = new Padding(5, 5, 5, 5);
+            tabPageReports.Size = new Size(1516, 744);
+            tabPageReports.TabIndex = 8;
+            tabPageReports.Text = "Reports";
+            tabPageReports.UseVisualStyleBackColor = true;
+            // 
+            // lblReportsTitle
+            // 
+            lblReportsTitle.AutoSize = true;
+            lblReportsTitle.Font = new Font("Segoe UI Black", 13.8F, FontStyle.Bold, GraphicsUnit.Point);
+            lblReportsTitle.Location = new Point(5, 5);
+            lblReportsTitle.Margin = new Padding(5, 0, 5, 0);
+            lblReportsTitle.Name = "lblReportsTitle";
+            lblReportsTitle.Size = new Size(400, 50);
+            lblReportsTitle.TabIndex = 0;
+            lblReportsTitle.Text = "View Reports";
+            // 
+            // btnViewReports
+            // 
+            btnViewReports.Location = new Point(5, 70);
+            btnViewReports.Margin = new Padding(5, 5, 5, 5);
+            btnViewReports.Name = "btnViewReports";
+            btnViewReports.Size = new Size(250, 51);
+            btnViewReports.TabIndex = 1;
+            btnViewReports.Text = "Open Reports";
+            btnViewReports.UseVisualStyleBackColor = true;
+            btnViewReports.Click += btnViewReports_Click;
             // 
             // AdminDashboard
             // 
@@ -1724,6 +1764,8 @@
             Home.ResumeLayout(false);
             Home.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            tabPageReports.ResumeLayout(false);
+            tabPageReports.PerformLayout();
             AdminTab.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
@@ -1858,5 +1900,8 @@
         private DataGridView dataGridView6;
         private DataGridView dataGridView7;
         private DataGridView dataGridView8;
+        private TabPage tabPageReports;
+        private Button btnViewReports;
+        private Label lblReportsTitle;
     }
 }

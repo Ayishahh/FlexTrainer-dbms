@@ -129,4 +129,115 @@ namespace FlexTrainer
             return StringComparer.OrdinalIgnoreCase.Compare(hashOfInput, hash) == 0;
         }
     }
+
+    /// <summary>
+    /// Input validation helper for form validation.
+    /// Provides methods for validating user inputs before database operations.
+    /// </summary>
+    public static class ValidationHelper
+    {
+        /// <summary>
+        /// Validates an email address format.
+        /// </summary>
+        /// <param name="email">Email address to validate</param>
+        /// <returns>True if email format is valid</returns>
+        public static bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Validates password strength (minimum 8 characters).
+        /// </summary>
+        /// <param name="password">Password to validate</param>
+        /// <returns>True if password meets minimum requirements</returns>
+        public static bool IsValidPassword(string password)
+        {
+            return !string.IsNullOrEmpty(password) && password.Length >= 8;
+        }
+
+        /// <summary>
+        /// Validates a name field (minimum 2 characters).
+        /// </summary>
+        /// <param name="name">Name to validate</param>
+        /// <returns>True if name is valid</returns>
+        public static bool IsValidName(string name)
+        {
+            return !string.IsNullOrWhiteSpace(name) && name.Length >= 2;
+        }
+
+        /// <summary>
+        /// Validates a positive number.
+        /// </summary>
+        /// <param name="input">String to parse</param>
+        /// <param name="value">Parsed decimal value</param>
+        /// <returns>True if input is a positive number</returns>
+        public static bool IsPositiveNumber(string input, out decimal value)
+        {
+            return decimal.TryParse(input, out value) && value > 0;
+        }
+
+        /// <summary>
+        /// Validates a positive integer.
+        /// </summary>
+        /// <param name="input">String to parse</param>
+        /// <param name="value">Parsed integer value</param>
+        /// <returns>True if input is a positive integer</returns>
+        public static bool IsPositiveInteger(string input, out int value)
+        {
+            return int.TryParse(input, out value) && value > 0;
+        }
+
+        /// <summary>
+        /// Validates a username (alphanumeric, underscore, 3-50 characters).
+        /// </summary>
+        /// <param name="username">Username to validate</param>
+        /// <returns>True if username is valid</returns>
+        public static bool IsValidUsername(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+                return false;
+
+            if (username.Length < 3 || username.Length > 50)
+                return false;
+
+            // Allow alphanumeric and underscore
+            return System.Text.RegularExpressions.Regex.IsMatch(username, @"^[a-zA-Z0-9_]+$");
+        }
+
+        /// <summary>
+        /// Validates a date is not in the future.
+        /// </summary>
+        /// <param name="date">Date to validate</param>
+        /// <returns>True if date is not in the future</returns>
+        public static bool IsNotFutureDate(DateTime date)
+        {
+            return date <= DateTime.Now;
+        }
+
+        /// <summary>
+        /// Validates a date of birth (must be at least 13 years old).
+        /// </summary>
+        /// <param name="dob">Date of birth to validate</param>
+        /// <returns>True if age is at least 13</returns>
+        public static bool IsValidAge(DateTime dob)
+        {
+            int age = DateTime.Now.Year - dob.Year;
+            if (DateTime.Now < dob.AddYears(age))
+                age--;
+
+            return age >= 13;
+        }
+    }
 }
