@@ -1,4 +1,4 @@
-using DB_phase2_project;
+using FlexTrainer;
 using System.Data.SqlClient;
 using System.Data;
 using System.Security.Cryptography;
@@ -268,8 +268,10 @@ namespace Project
             using (SqlConnection conn = new SqlConnection(connection_string))
             {
                 conn.Open();
-                using (SqlCommand cmd = new SqlCommand("SELECT Gym_ID, Gym_name FROM Gym WHERE GymOwner_ID = (SELECT User_ID FROM Users WHERE Username like '" + LogIn.USER_NAME + "')", conn)) // previous trainers
+                using (SqlCommand cmd = new SqlCommand("SELECT Gym_ID, Gym_name FROM Gym WHERE GymOwner_ID = (SELECT User_ID FROM Users WHERE Username = @Username)", conn)) // previous trainers
                 {
+                    cmd.Parameters.AddWithValue("@Username", LogIn.USER_NAME);
+
                     // Initialize SqlDataAdapter and DataTable
                     SqlDataAdapter sda = new SqlDataAdapter(cmd);
                     DataTable dt = new DataTable();
@@ -283,7 +285,7 @@ namespace Project
                     cmd.Dispose();
                 }
 
-                using (SqlCommand cmd = new SqlCommand("SELECT Request_ID FROM Gym_Request", conn)) // previous trainers
+                using (SqlCommand cmd = new SqlCommand("SELECT Request_ID FROM Gym_Request WHERE Request_status = 'Pending'", conn)) // pending gym requests
                 {
                     // Initialize SqlDataAdapter and DataTable
                     SqlDataAdapter sda = new SqlDataAdapter(cmd);
@@ -357,6 +359,9 @@ namespace Project
                 }
                 conn.Close();
             }
+
+            // Load pending gym requests
+            LoadPendingGymRequests();
         }
 
         private void comboBox18_SelectedIndexChanged(object sender, EventArgs e)
@@ -364,8 +369,9 @@ namespace Project
             using (SqlConnection conn = new SqlConnection(connection_string))
             {
                 conn.Open();
-                string query = "Select* from Gym where Gym_name = '" + comboBox18.Text + "'";
+                string query = "Select* from Gym where Gym_name = @GymName";
                 SqlCommand cm1 = new SqlCommand(query, conn);
+                cm1.Parameters.AddWithValue("@GymName", comboBox18.Text);
                 SqlDataReader reader1 = cm1.ExecuteReader();
                 if (reader1.Read())
                 {
@@ -376,8 +382,10 @@ namespace Project
                 }
                 reader1.Close();
 
-                using (SqlCommand cmd = new SqlCommand("SELECT Member_ID FROM Member WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name like '" + comboBox18.Text + "')", conn)) // previous trainers
+                using (SqlCommand cmd = new SqlCommand("SELECT Member_ID FROM Member WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = @GymName)", conn)) // previous trainers
                 {
+                    cmd.Parameters.AddWithValue("@GymName", comboBox18.Text);
+
                     // Initialize SqlDataAdapter and DataTable
                     SqlDataAdapter sda = new SqlDataAdapter(cmd);
                     DataTable dt = new DataTable();
@@ -389,8 +397,10 @@ namespace Project
                     comboBox2.DisplayMember = "Member_ID";
                 }
 
-                using (SqlCommand cmd = new SqlCommand("SELECT Trainer_ID FROM Works_for WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name like '" + comboBox18.Text + "')", conn)) // previous trainers
+                using (SqlCommand cmd = new SqlCommand("SELECT Trainer_ID FROM Works_for WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = @GymName)", conn)) // previous trainers
                 {
+                    cmd.Parameters.AddWithValue("@GymName", comboBox18.Text);
+
                     // Initialize SqlDataAdapter and DataTable
                     SqlDataAdapter sda = new SqlDataAdapter(cmd);
                     DataTable dt = new DataTable();
@@ -455,33 +465,98 @@ namespace Project
 
         private void button8_Click(object sender, EventArgs e)
         {
-            using (SqlConnection conn = new SqlConnection(connection_string))
+            try
             {
-                conn.Open();
-                string storedProcedure = "SP_Approve_Gym_Request";
-                using (SqlCommand cm_mem = new SqlCommand(storedProcedure, conn))
+                if (comboBox6.SelectedValue == null)
                 {
-                    cm_mem.CommandType = CommandType.StoredProcedure;
-                    cm_mem.Parameters.AddWithValue("@Request_ID", comboBox6.SelectedItem.ToString());
-
-                    cm_mem.ExecuteScalar();
-                    cm_mem.Dispose();
+                    MessageBox.Show("Please select a gym request to approve.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
                 }
-                conn.Close();
+
+                using (SqlConnection conn = new SqlConnection(connection_string))
+                {
+                    conn.Open();
+
+                    // Get Admin_ID from current logged-in user
+                    int adminId = 0;
+                    string getAdminIdQuery = "SELECT User_ID FROM Users WHERE Username = @Username AND Role = 'Admin'";
+                    using (SqlCommand getAdminCmd = new SqlCommand(getAdminIdQuery, conn))
+                    {
+                        getAdminCmd.Parameters.AddWithValue("@Username", LogIn.USER_NAME);
+                        object result = getAdminCmd.ExecuteScalar();
+                        if (result != null)
+                        {
+                            adminId = Convert.ToInt32(result);
+                        }
+                    }
+
+                    // Call stored procedure to approve gym request
+                    string storedProcedure = "SP_Approve_Gym_Request";
+                    using (SqlCommand cm_mem = new SqlCommand(storedProcedure, conn))
+                    {
+                        cm_mem.CommandType = CommandType.StoredProcedure;
+                        cm_mem.Parameters.AddWithValue("@Request_ID", Convert.ToInt32(comboBox6.SelectedValue));
+
+                        if (adminId > 0)
+                        {
+                            cm_mem.Parameters.AddWithValue("@Admin_ID", adminId);
+                        }
+                        else
+                        {
+                            cm_mem.Parameters.AddWithValue("@Admin_ID", DBNull.Value);
+                        }
+
+                        cm_mem.ExecuteNonQuery();
+                    }
+
+                    MessageBox.Show("Gym registration request approved successfully. Gym has been created.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Refresh the pending requests list
+                    LoadPendingGymRequests();
+
+                    conn.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error approving gym request: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void button9_Click(object sender, EventArgs e)
         {
-            using (SqlConnection conn = new SqlConnection(connection_string))
+            try
             {
-                conn.Open();
-                string q1 = "UPDATE Gym_Request SET Request_status = 'Rejected' WHERE Request_ID = @RequestID";
-                SqlCommand c1 = new SqlCommand(q1, conn);
-                c1.Parameters.AddWithValue("@RequestID", comboBox6.Text);
-                c1.ExecuteNonQuery();
-                MessageBox.Show("Gym registration request rejected.");
-                conn.Close();
+                if (comboBox6.SelectedValue == null)
+                {
+                    MessageBox.Show("Please select a gym request to reject.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                DialogResult dialogResult = MessageBox.Show("Are you sure you want to reject this gym registration request?", "Confirm Rejection", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (dialogResult == DialogResult.No)
+                {
+                    return;
+                }
+
+                using (SqlConnection conn = new SqlConnection(connection_string))
+                {
+                    conn.Open();
+                    string q1 = "UPDATE Gym_Request SET Request_status = 'Rejected' WHERE Request_ID = @RequestID";
+                    SqlCommand c1 = new SqlCommand(q1, conn);
+                    c1.Parameters.AddWithValue("@RequestID", Convert.ToInt32(comboBox6.SelectedValue));
+                    c1.ExecuteNonQuery();
+                    MessageBox.Show("Gym registration request rejected successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Refresh the pending requests list
+                    LoadPendingGymRequests();
+
+                    conn.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error rejecting gym request: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -490,9 +565,10 @@ namespace Project
             using (SqlConnection conn = new SqlConnection(connection_string))
             {
                 conn.Open();
-                string query = "SELECT Trainer_ID FROM Works_For WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = '" + comboBox7.Text + "')";
+                string query = "SELECT Trainer_ID FROM Works_For WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = @GymName)";
                 using (SqlCommand cm = new SqlCommand(query, conn))
                 {
+                    cm.Parameters.AddWithValue("@GymName", comboBox7.Text);
 
                     SqlDataAdapter sda = new SqlDataAdapter(cm);
                     DataTable dt = new DataTable();
@@ -513,8 +589,9 @@ namespace Project
             using (SqlConnection conn = new SqlConnection(connection_string))
             {
                 conn.Open();
-                string query = "Select* from Users where User_ID = " + comboBox4.Text.ToString();
+                string query = "Select* from Users where User_ID = @UserID";
                 SqlCommand cm1 = new SqlCommand(query, conn);
+                cm1.Parameters.AddWithValue("@UserID", Convert.ToInt32(comboBox4.Text));
                 SqlDataReader reader1 = cm1.ExecuteReader();
                 if (reader1.Read())
                 {
@@ -527,8 +604,9 @@ namespace Project
                 }
                 reader1.Close();
 
-                query = "Select* from Trainer where Trainer_ID = " + comboBox4.Text.ToString();
+                query = "Select* from Trainer where Trainer_ID = @TrainerID";
                 cm1 = new SqlCommand(query, conn);
+                cm1.Parameters.AddWithValue("@TrainerID", Convert.ToInt32(comboBox4.Text));
                 SqlDataReader reader2 = cm1.ExecuteReader();
                 if (reader2.Read())
                 {
@@ -546,9 +624,10 @@ namespace Project
             using (SqlConnection conn = new SqlConnection(connection_string))
             {
                 conn.Open();
-                string query = "SELECT Member_ID FROM Member WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = '" + comboBox5.Text + "')";
+                string query = "SELECT Member_ID FROM Member WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = @GymName)";
                 using (SqlCommand cm = new SqlCommand(query, conn))
                 {
+                    cm.Parameters.AddWithValue("@GymName", comboBox5.Text);
 
                     SqlDataAdapter sda = new SqlDataAdapter(cm);
                     DataTable dt = new DataTable();
@@ -654,9 +733,10 @@ namespace Project
             using (SqlConnection conn = new SqlConnection(connection_string))
             {
                 conn.Open();
-                string query = "SELECT Trainer_ID FROM Works_For WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = '" + comboBox14.Text + "')";
+                string query = "SELECT Trainer_ID FROM Works_For WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = @GymName)";
                 using (SqlCommand cm = new SqlCommand(query, conn))
                 {
+                    cm.Parameters.AddWithValue("@GymName", comboBox14.Text);
 
                     SqlDataAdapter sda = new SqlDataAdapter(cm);
                     DataTable dt = new DataTable();
@@ -685,6 +765,60 @@ namespace Project
         private void label3_Click_2(object sender, EventArgs e)
         {
 
+        }
+
+        private void LoadPendingGymRequests()
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connection_string))
+                {
+                    conn.Open();
+                    string query = @"SELECT Request_ID, Request_date, Gym_name, Gym_location,
+                                    Request_status, GymOwner_ID
+                                    FROM Gym_Request
+                                    WHERE Request_status = 'Pending'
+                                    ORDER BY Request_date DESC";
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(query, conn);
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+
+                    // Update comboBox6 with pending requests
+                    if (comboBox6 != null)
+                    {
+                        comboBox6.DataSource = dt.Copy();
+                        comboBox6.ValueMember = "Request_ID";
+                        comboBox6.DisplayMember = "Request_ID";
+                    }
+
+                    // Update DataGridView if it exists
+                    // Assuming there's a DataGridView for gym requests (dataGridView1 or similar)
+                    // If the DataGridView doesn't exist, this will need to be added to the form designer
+                    if (this.Controls.Find("dataGridView1", true).Length > 0)
+                    {
+                        DataGridView dgv = (DataGridView)this.Controls.Find("dataGridView1", true)[0];
+                        dgv.DataSource = dt;
+                        dgv.ReadOnly = true;
+                        dgv.DefaultCellStyle.Font = new Font("Arial", 8);
+                        dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 8);
+                        dgv.RowHeadersDefaultCellStyle.Font = new Font("Arial", 8);
+                        dgv.RowHeadersVisible = false;
+                    }
+
+                    conn.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error loading pending gym requests: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnViewReports_Click(object sender, EventArgs e)
+        {
+            var reportsForm = new AdminReports();
+            reportsForm.ShowDialog();
         }
     }
 }

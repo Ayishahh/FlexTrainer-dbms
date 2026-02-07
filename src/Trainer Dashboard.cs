@@ -3,7 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
 
-namespace DB_phase2_project
+namespace FlexTrainer
 {
     public partial class TrainerDashboard : Form
     {
@@ -722,6 +722,11 @@ namespace DB_phase2_project
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e) { }
         private void label103_Click(object sender, EventArgs e) { }
         private void textBox3_TextChanged(object sender, EventArgs e) { }
+
+        private void btnViewReports_Click(object sender, EventArgs e)
+        {
+            var reportsForm = new TrainerReports();
+            reportsForm.ShowDialog();
+        }
     }
 }
-
