@@ -28,6 +28,9 @@ if [ $? -eq 0 ]; then
     echo "Inserting sample data..."
     docker exec -i flex-trainer-db /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P FlexTrainer2024! -C -i /docker-entrypoint-initdb.d/04_sample_data.sql
     
+    echo "Creating reports..."
+    docker exec -i flex-trainer-db /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P FlexTrainer2024! -C -i /docker-entrypoint-initdb.d/05_reports.sql
+
     echo ""
     echo "============================================"
     echo "Database setup complete!"
