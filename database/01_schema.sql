@@ -18,7 +18,7 @@ CREATE TABLE Users(
     User_ID INT IDENTITY(1,1) PRIMARY KEY,
     First_name VARCHAR(255) NOT NULL,
     Last_name VARCHAR(255) NOT NULL,
-    DOB DATE NOT NULL,
+    DOB DATE NOT NULL CHECK(DOB <= GETDATE()),
     Username VARCHAR(255) NOT NULL UNIQUE,
     Password NVARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
@@ -59,8 +59,8 @@ GO
 CREATE TABLE Membership(
     Membership_ID INT IDENTITY(1,1) PRIMARY KEY,
     Membership_name VARCHAR(255) NOT NULL,
-    Membership_duration INT NOT NULL,
-    Membership_charges NUMERIC(10,2) NOT NULL
+    Membership_duration INT NOT NULL CHECK(Membership_duration > 0),
+    Membership_charges NUMERIC(10,2) NOT NULL CHECK(Membership_charges > 0)
 );
 GO
 
@@ -83,7 +83,7 @@ CREATE TABLE Workout_Plan(
     Plan_name VARCHAR(255) NOT NULL UNIQUE,
     Goal VARCHAR(255) NOT NULL CHECK(Goal IN ('Weight Loss', 'Muscle Gain', 'Strength Gain')),
     Level INT NOT NULL CHECK(Level IN (1, 2, 3)),
-    Charges NUMERIC(10,2) NOT NULL,
+    Charges NUMERIC(10,2) NOT NULL CHECK(Charges >= 0),
     Creator_ID INT,
     FOREIGN KEY (Creator_ID) REFERENCES Users(User_ID)
 );
@@ -107,9 +107,9 @@ GO
 
 CREATE TABLE Workout_Exercise(
     Workout_ID INT IDENTITY(1,1) PRIMARY KEY,
-    Workout_sets INT NOT NULL,
-    Workout_reps INT NOT NULL,
-    Rest_intervals INT NOT NULL,
+    Workout_sets INT NOT NULL CHECK(Workout_sets > 0),
+    Workout_reps INT NOT NULL CHECK(Workout_reps > 0),
+    Rest_intervals INT NOT NULL CHECK(Rest_intervals >= 0),
     Exercise_ID INT,
     Plan_ID INT,
     FOREIGN KEY (Exercise_ID) REFERENCES Exercise(Exercise_ID),
@@ -134,11 +134,12 @@ GO
 CREATE TABLE Meals(
     Meal_ID INT IDENTITY(1,1) PRIMARY KEY,
     Meal_name VARCHAR(255) NOT NULL,
-    Meal_type VARCHAR(255) NOT NULL CHECK(Meal_type IN ('Vegan', 'Vegetarian', 'Non-Vegetarian')),
-    Protein NUMERIC(10,2) NOT NULL,
-    Carbohydrates NUMERIC(10,2) NOT NULL,
-    Fibre NUMERIC(10,2) NOT NULL,
-    Fats NUMERIC(10,2) NOT NULL
+    Meal_type VARCHAR(255) NOT NULL CHECK(Meal_type IN ('Breakfast', 'Lunch', 'Dinner', 'Snack')),
+    Protein NUMERIC(10,2) NOT NULL CHECK(Protein >= 0),
+    Carbohydrates NUMERIC(10,2) NOT NULL CHECK(Carbohydrates >= 0),
+    Fibre NUMERIC(10,2) NOT NULL CHECK(Fibre >= 0),
+    Fats NUMERIC(10,2) NOT NULL CHECK(Fats >= 0),
+    Calories NUMERIC(10,2) NOT NULL CHECK(Calories >= 0)
 );
 GO
 
@@ -235,23 +236,26 @@ CREATE TABLE Appointment(
     Appointment_date DATE NOT NULL,
     Appointment_start_time TIME(0) NOT NULL,
     Appointment_end_time TIME(0) NOT NULL,
+    Appointment_status VARCHAR(50) DEFAULT 'Scheduled' CHECK(Appointment_status IN ('Scheduled', 'Completed', 'Cancelled')),
     Member_ID INT NOT NULL,
     Trainer_ID INT NOT NULL,
     FOREIGN KEY (Member_ID) REFERENCES Member(Member_ID),
-    FOREIGN KEY (Trainer_ID) REFERENCES Trainer(Trainer_ID)
+    FOREIGN KEY (Trainer_ID) REFERENCES Trainer(Trainer_ID),
+    CHECK(Appointment_end_time > Appointment_start_time)
 );
 GO
 
 CREATE TABLE Appointment_Requests(
     Request_ID INT IDENTITY(1,1) PRIMARY KEY,
-    Request_date DATE NOT NULL,
+    Request_date DATE NOT NULL DEFAULT GETDATE(),
     Request_start_time TIME(0) NOT NULL,
     Request_end_time TIME(0) NOT NULL,
-    Request_status VARCHAR(255) NOT NULL CHECK(Request_status IN ('Pending', 'Approved', 'Rejected')),
+    Request_status VARCHAR(255) NOT NULL DEFAULT 'Pending' CHECK(Request_status IN ('Pending', 'Approved', 'Rejected')),
     Member_ID INT,
     Trainer_ID INT,
     FOREIGN KEY (Member_ID) REFERENCES Member(Member_ID),
-    FOREIGN KEY (Trainer_ID) REFERENCES Trainer(Trainer_ID)
+    FOREIGN KEY (Trainer_ID) REFERENCES Trainer(Trainer_ID),
+    CHECK(Request_end_time > Request_start_time)
 );
 GO
 
@@ -261,8 +265,8 @@ GO
 
 CREATE TABLE Gym_Request(
     Request_ID INT IDENTITY(1,1) PRIMARY KEY,
-    Request_date DATE NOT NULL,
-    Request_status VARCHAR(255) NOT NULL CHECK(Request_status IN ('Pending', 'Approved', 'Rejected')),
+    Request_date DATE NOT NULL DEFAULT GETDATE(),
+    Request_status VARCHAR(255) NOT NULL DEFAULT 'Pending' CHECK(Request_status IN ('Pending', 'Approved', 'Rejected')),
     Gym_name VARCHAR(255) NOT NULL,
     Gym_location VARCHAR(255) NOT NULL,
     Admin_ID INT,
@@ -274,8 +278,8 @@ GO
 
 CREATE TABLE Trainer_Requests(
     Request_ID INT IDENTITY(1,1) PRIMARY KEY,
-    Request_date DATE NOT NULL,
-    Request_status VARCHAR(255) NOT NULL CHECK(Request_status IN ('Pending', 'Approved', 'Rejected')),
+    Request_date DATE NOT NULL DEFAULT GETDATE(),
+    Request_status VARCHAR(255) NOT NULL DEFAULT 'Pending' CHECK(Request_status IN ('Pending', 'Approved', 'Rejected')),
     Trainer_ID INT,
     GymOwner_ID INT,
     Gym_ID INT,
