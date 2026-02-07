@@ -2,285 +2,286 @@
 
 A comprehensive gym management database system built with C# Windows Forms and SQL Server.
 
-![Database Systems Project](docs/diagrams/ERDPlus%20Image.png)
+---
 
-## 📋 Project Overview
+## Overview
 
-Flex Trainer is a desktop application designed for managing gym operations including:
-- **Member Management**: Registration, memberships, and profile management
-- **Trainer Management**: Trainer registration with gym owner approval workflow
-- **Workout Planning**: Create, share, and track exercise plans
-- **Diet Planning**: Nutrition plans with meal tracking and allergen management
-- **Appointment Booking**: Schedule training sessions with personal trainers
-- **Feedback System**: Rate and review trainers
-- **Administrative Dashboard**: Gym performance analytics and approval workflows
+Flex Trainer is a desktop application for managing gym operations with role-based access control supporting four user types: Members, Trainers, Gym Owners, and Administrators.
 
-## 🏗️ Project Structure
-
-```
-flex-trainer/
-├── src/                          # C# Application Source Code
-│   ├── *.cs                      # Form code files
-│   ├── *.Designer.cs             # Designer-generated code
-│   ├── *.resx                    # Resource files
-│   ├── App.config                # Connection string configuration
-│   ├── DatabaseHelper.cs         # Centralized DB connection helper
-│   └── DB_phase2_project.sln     # Visual Studio Solution
-│
-├── database/                     # SQL Server Scripts
-│   ├── 00_SETUP_README.sql       # Setup instructions
-│   ├── 01_schema.sql             # Database and tables
-│   ├── 02_triggers.sql           # Audit trail triggers (30+)
-│   ├── 03_procedures.sql         # Stored procedures
-│   ├── 04_sample_data.sql        # Sample data (50+ users)
-│   └── 05_reports.sql            # Report queries
-│
-├── docs/                         # Documentation
-│   ├── ERD_Diagrams.md           # Mermaid ERD diagrams
-│   ├── Database_Schema.md        # Schema documentation
-│   ├── diagrams/                 # Visual diagrams (PNG)
-│   └── excel_data/               # Sample Excel data
-│
-├── docker-compose.yml            # Docker SQL Server setup
-├── setup_database.sh             # Database initialization script
-└── README.md
-```
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- **For C# Application**: Visual Studio 2019+ (Windows)
-- **For Database**: Docker Desktop OR SQL Server 2019+
+### Core Features
+- Member registration and profile management
+- Trainer registration with approval workflow
+- Workout and diet plan creation with nutritional tracking
+- Appointment booking and scheduling
+- Feedback and rating system
+- 20 comprehensive business intelligence reports
+- Administrative dashboards with analytics
+- Excel bulk user import
+- SHA256 password hashing
+- SQL injection prevention
+- Input validation
 
 ---
 
-## 🐳 Option 1: Docker Setup (Recommended)
+## Project Structure
 
-### Step 1: Start SQL Server Container
-
-```bash
-# Navigate to project directory
-cd flex-trainer
-
-# Start SQL Server in Docker
-docker-compose up -d
-
-# Wait for container to be ready (about 30 seconds)
-docker logs -f flex-trainer-db
-# Wait until you see "SQL Server is now ready for client connections"
-# Press Ctrl+C to exit logs
+```
+DB_Project/
+├── src/                              # C# Application
+│   ├── DatabaseHelper.cs             # Connection, password, validation
+│   ├── LogIn.cs                      # Authentication
+│   ├── *Dashboard.cs                 # Role-specific interfaces
+│   ├── *Reports.cs                   # Report UI forms
+│   └── DB_phase2_project.sln
+│
+├── database/
+│   ├── 01_schema.sql                 # 29 tables
+│   ├── 02_triggers.sql               # 49 audit triggers
+│   ├── 03_procedures.sql             # CRUD stored procedures
+│   ├── 04_sample_data.sql            # Test data 
+│   ├── 06_comprehensive_reports.sql  # 20 report procedures
+│   └── PASSWORD_REFERENCE.md         # Test credentials
+│
+├── docs/
+│   
+└── docker-compose.yml
 ```
 
-### Step 2: Initialize Database
+---
 
-**Option A: Using setup script (Mac/Linux)**
+## Quick Start
+
+### Prerequisites
+- Docker Desktop (recommended) or SQL Server 2019+
+- Visual Studio 2019+ with .NET Framework 4.7.2
+- 4GB free disk space
+
+### Database Setup
+
 ```bash
+# Start SQL Server container
+cd DB_Project
+docker-compose up -d
+
+# Wait for container to be ready
+docker logs -f flex-trainer-db
+# Look for: "SQL Server is now ready for client connections"
+
+# Initialize database
+chmod +x setup_database.sh
 ./setup_database.sh
 ```
 
-**Option B: Manual setup**
-```bash
-# 1. Execute schema
-docker exec -i flex-trainer-db /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P FlexTrainer2024! -C -i /docker-entrypoint-initdb.d/01_schema.sql
-
-# 2. Execute triggers
-docker exec -i flex-trainer-db /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P FlexTrainer2024! -C -i /docker-entrypoint-initdb.d/02_triggers.sql
-
-# 3. Execute procedures
-docker exec -i flex-trainer-db /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P FlexTrainer2024! -C -i /docker-entrypoint-initdb.d/03_procedures.sql
-
-# 4. Insert sample data
-docker exec -i flex-trainer-db /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P FlexTrainer2024! -C -i /docker-entrypoint-initdb.d/04_sample_data.sql
-```
-
-### Step 3: Connection Details for C# App
-
-```
-Server: localhost,1433
-Database: DB_PROJECT
-Username: sa
-Password: FlexTrainer2024!
-```
-
-**Connection String** (already configured in `App.config`):
-```
-Data Source=localhost,1433;Initial Catalog=DB_PROJECT;User ID=sa;Password=FlexTrainer2024!;TrustServerCertificate=True
-```
-
-### Docker Commands
+Manual setup if needed:
 
 ```bash
-# Stop container
+# Execute each script in order
+docker exec -i flex-trainer-db /opt/mssql-tools18/bin/sqlcmd \
+    -S localhost -U sa -P FlexTrainer2024! -C \
+    -i /docker-entrypoint-initdb.d/01_schema.sql
+
+docker exec -i flex-trainer-db /opt/mssql-tools18/bin/sqlcmd \
+    -S localhost -U sa -P FlexTrainer2024! -C \
+    -i /docker-entrypoint-initdb.d/02_triggers.sql
+
+docker exec -i flex-trainer-db /opt/mssql-tools18/bin/sqlcmd \
+    -S localhost -U sa -P FlexTrainer2024! -C \
+    -i /docker-entrypoint-initdb.d/03_procedures.sql
+
+docker exec -i flex-trainer-db /opt/mssql-tools18/bin/sqlcmd \
+    -S localhost -U sa -P FlexTrainer2024! -C \
+    -i /docker-entrypoint-initdb.d/04_sample_data.sql
+
+docker exec -i flex-trainer-db /opt/mssql-tools18/bin/sqlcmd \
+    -S localhost -U sa -P FlexTrainer2024! -C \
+    -i /docker-entrypoint-initdb.d/06_comprehensive_reports.sql
+```
+
+### Application Setup
+
+**Connection String** (pre-configured in `src/App.config`):
+```
+Data Source=localhost,1433;
+Initial Catalog=DB_PROJECT;
+User ID=sa;
+Password=FlexTrainer2024!;
+TrustServerCertificate=True
+```
+
+**For Parallels Users**: If Docker runs on macOS and Visual Studio on Windows, replace `localhost` with your Mac's IP address.
+
+**Build and Run**:
+1. Open `src/Flex-Trainer.sln` in Visual Studio
+2. Build
+3. Run
+
+---
+
+## Test Accounts
+
+All passwords are SHA256 hashed in the database. Use plain-text passwords below for login.
+
+**Admins**
+- alice_smith / admin123
+- jessica_lopez / admin456
+
+**Gym Owners**
+- eva_brown / owner123
+- james_williams / owner456
+
+**Trainers**
+- bob_johnson / trainer123
+- zara_garcia / trainer456
+
+**Members**
+- john_doe / member123
+- jane_doe / member456
+- michael_lee / member789
+
+Complete list: See [database/PASSWORD_REFERENCE.md](database/PASSWORD_REFERENCE.md)
+
+---
+
+## User Roles
+
+### Member
+- Register with validated input
+- Create and manage workout/diet plans
+- Book trainer appointments
+- Submit feedback and ratings
+- Edit profile
+
+### Trainer
+- Register (requires gym owner approval)
+- Create plans for assigned members
+- View appointment schedule
+- View client feedback
+- Edit profile (experience, specialization)
+
+### Gym Owner
+- Approve/reject trainer requests
+- View all members and trainers at gym
+- Access gym-specific reports
+- Manage gym operations
+
+### Administrator
+- Approve/reject gym registration requests
+- Import users from Excel (bulk upload)
+- View system-wide analytics
+- Manage all gyms, members, and trainers
+- Access all 20 business intelligence reports
+
+---
+
+## Database Architecture
+
+**Schema**: 29 tables normalized to 3NF
+
+**Core Components**:
+- Users (role-based authentication)
+- Member, Trainer, Gym_Owner, Admin (role-specific data)
+- Gym, Membership (facility management)
+- Workout_Plan, Diet_Plan (fitness tracking)
+- Exercise, Machine, Meal, Allergen (supporting entities)
+- Appointment, Feedback (interactions)
+- System_Log (audit trail)
+
+**Audit Trail**: 49 triggers logging all INSERT, UPDATE, and DELETE operations to System_Log table.
+
+**Constraints**:
+- CHECK: Data validation (ratings 1-5, positive values, age limits)
+- DEFAULT: Automatic timestamps and status values
+- FOREIGN KEY: Referential integrity
+- UNIQUE: Username and email uniqueness
+
+---
+
+## Reports
+
+1. Members by trainer and gym
+2. Members by diet plan and gym
+3. Cross-gym member analysis
+4. Machine usage by day
+5. Low-calorie breakfast plans (<500 cal)
+6. Low-carb diet plans (<300g)
+7. Workout plans excluding specific machine
+8. Allergen-free diet plans
+9. New memberships (last 3 months)
+10. Gym member growth comparison
+11. Trainer performance metrics
+12. Popular workout plans
+13. Popular diet plans
+14. Gym revenue analysis
+15. Trainer appointment schedules
+16. Member activity metrics
+17. Workout plans by goal
+18. Diet plans by type
+19. Pending approval requests
+20. System audit log
+
+Reports accessible through role-specific UI forms.
+
+---
+
+## Security
+
+**Password Security**
+- SHA256 hashing for all passwords
+- No plain-text storage
+- Hash verification on login
+
+**SQL Injection Prevention**
+- 100% parameterized queries
+- All 50+ input points secured
+- Stored procedures for database operations
+
+**Input Validation**
+- Email format (RFC compliant)
+- Password strength (minimum 8 characters)
+- Username format (3-50 alphanumeric + underscore)
+- Age validation (minimum 13 years)
+- Positive number validation
+
+**Connection Security**
+- Using statements for automatic disposal
+- Centralized connection management
+- No connection strings in error messages
+
+---
+
+## Documentation
+
+| File | Description |
+|------|-------------|
+| TESTING_GUIDE.md | Setup and testing procedures |
+| TESTING_CHECKLIST.md | Complete QA checklist |
+| PROJECT_SUMMARY.md | Full project documentation |
+| PASSWORD_REFERENCE.md | Test account credentials |
+
+---
+
+## Docker Commands
+
+```bash
+# Start
+docker-compose up -d
+
+# Stop (keep data)
 docker-compose down
 
 # Stop and remove data
 docker-compose down -v
 
 # View logs
-docker logs flex-trainer-db
+docker logs -f flex-trainer-db
 
-# Connect with sqlcmd
-docker exec -it flex-trainer-db /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P FlexTrainer2024! -C
+# Connect to SQL Server
+docker exec -it flex-trainer-db /opt/mssql-tools18/bin/sqlcmd \
+    -S localhost -U sa -P FlexTrainer2024! -C
 ```
 
 ---
 
-## 💻 Option 2: Windows SQL Server Setup
+## License
 
-### Step 1: Install SQL Server
-Download and install [SQL Server 2019 Developer Edition](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
-
-### Step 2: Create Database
-1. Open SQL Server Management Studio (SSMS)
-2. Connect to your local SQL Server
-3. Execute scripts in order:
-   - `database/01_schema.sql`
-   - `database/02_triggers.sql`
-   - `database/03_procedures.sql`
-   - `database/04_sample_data.sql`
-
-### Step 3: Update Connection String
-Edit `src/App.config`:
-```xml
-<add name="FlexTrainerDB" 
-     connectionString="Data Source=YOUR_SERVER_NAME;Initial Catalog=DB_PROJECT;Integrated Security=True" 
-     providerName="System.Data.SqlClient" />
-```
-
----
-
-## 🖥️ Running the C# Application
-
-### In Visual Studio (Windows/Parallels VM)
-
-1. Open `src/DB_phase2_project.sln` in Visual Studio
-2. Ensure App.config has correct connection string
-3. Build solution: `Ctrl + Shift + B`
-4. Run: `F5` or click "Start"
-
-### Test Accounts
-
-| Role | Username | Password |
-|------|----------|----------|
-| Admin | admin_user | admin123 |
-| Member | john_doe | password123 |
-| Trainer | sarah_trainer | trainer123 |
-| Gym Owner | gym_owner1 | owner123 |
-
-> **Note**: Check `database/04_sample_data.sql` for actual usernames and passwords in your dataset.
-
----
-
-## 👥 User Roles
-
-| Role | Description | Key Features |
-|------|-------------|--------------|
-| **Member** | Gym members | Create/view workout & diet plans, book trainers, submit feedback |
-| **Trainer** | Personal trainers | Create plans for clients, manage appointments, view feedback |
-| **Gym Owner** | Facility owners | Approve trainers, manage members, view reports |
-| **Admin** | System administrators | Approve gyms, view analytics, bulk import users from Excel |
-
----
-
-## 📊 Database Features
-
-### Normalization
-- Fully normalized to **Third Normal Form (3NF)**
-- 20+ entities with proper relationships
-- Junction tables for all many-to-many relationships
-
-### Audit Trail
-- **30+ triggers** for comprehensive logging
-- All INSERT, UPDATE, DELETE operations tracked in `System_Log` table
-- Archived data for deleted trainers
-
-### Stored Procedures
-- `Add_New_User` - Register new users with role-specific data
-- `User_Login` - Authenticate users and return role
-- `Request_Appointment` - Book training sessions
-- `Delete_Gym_Procedure` - Safely remove gyms
-- And more...
-
-### Reports (20 Total)
-1. Members trained by specific trainer at specific gym
-2. Members following specific diet plan at gym
-3. Members across gyms by trainer and diet plan
-4. Machine usage count by day
-5. Diet plans with <500 calorie breakfast
-6. Diet plans with <300g total carbs
-7. Workout plans not using specific machine
-8. Diet plans without specific allergen
-9. New memberships (last 3 months)
-10. Gym member comparison
-11-20. Additional performance and analytics reports
-
----
-
-## 🔧 Key Features
-
-### Excel Import (Admin Dashboard)
-- Bulk import users from Excel files (.xlsx, .xls)
-- Preview data before import
-- Uses `Add_New_User` stored procedure
-
-### Approval Workflows
-- Trainer registration → Gym Owner approval
-- Gym registration → Admin approval
-- Status tracking (Pending/Approved/Rejected)
-
-### Security Features
-- Parameterized SQL queries (SQL injection prevention)
-- Role-based access control
-- Centralized connection string management
-
----
-
-## 🧪 Testing Checklist
-
-### Member Interface
-- [ ] Register new member
-- [ ] Login as member
-- [ ] Create workout plan
-- [ ] Create diet plan
-- [ ] Book appointment with trainer
-- [ ] Submit trainer feedback
-
-### Trainer Interface
-- [ ] Register new trainer (verify request created)
-- [ ] Login as approved trainer
-- [ ] Create workout plan for client
-- [ ] View appointments
-
-### Gym Owner Interface
-- [ ] Approve trainer request
-- [ ] View member reports
-- [ ] Add new trainer directly
-
-### Admin Interface
-- [ ] Approve gym request
-- [ ] View gym performance reports
-- [ ] Import users from Excel
-
----
-
-## 🎯 Academic Requirements Met
-
-- [x] 4 User interfaces (Member, Trainer, Gym Owner, Admin)
-- [x] Database normalized to 3NF
-- [x] 20 reports (10 required + 10 additional)
-- [x] Excel data import (50+ users)
-- [x] Audit trail with 30+ triggers
-- [x] Full CRUD operations
-- [x] Approval workflows
-- [x] ERD and schema documentation
-
----
-
-## 📝 License
-
-This project was created for CS2005: Database Systems coursework (Spring 2024).
-
-## 👨‍💻 Team
-
-Database Systems Project - Spring 2024
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
