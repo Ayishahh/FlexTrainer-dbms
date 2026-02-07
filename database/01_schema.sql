@@ -20,7 +20,7 @@ CREATE TABLE Users(
     Last_name VARCHAR(255) NOT NULL,
     DOB DATE NOT NULL,
     Username VARCHAR(255) NOT NULL UNIQUE,
-    Password VARCHAR(255) NOT NULL,
+    Password NVARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     Role VARCHAR(255) NOT NULL CHECK(Role IN ('Trainer', 'Member', 'Admin', 'GymOwner')),
     Security_question VARCHAR(255)
@@ -310,7 +310,7 @@ CREATE TABLE Previous_Trainer(
     Last_name VARCHAR(255) NOT NULL,
     DOB DATE NOT NULL,
     Username VARCHAR(255) NOT NULL UNIQUE,
-    Password VARCHAR(255) NOT NULL,
+    Password NVARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     Security_question VARCHAR(255),
     Experience VARCHAR(255),

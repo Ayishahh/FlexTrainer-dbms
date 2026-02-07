@@ -11,12 +11,14 @@ GO
 -- =============================================================================
 
 -- Add a new user with role-specific record creation
-CREATE PROCEDURE SP_Add_New_User
+-- NOTE: @Password parameter should be pre-hashed using SHA256 by the calling application
+-- The database stores hashed passwords, not plain text
+CREATE OR ALTER PROCEDURE SP_Add_New_User
     @First_name NVARCHAR(50),
     @Last_name NVARCHAR(50),
     @DOB DATE,
     @Username NVARCHAR(50),
-    @Password NVARCHAR(50),
+    @Password NVARCHAR(255),  
     @email NVARCHAR(50),
     @Role NVARCHAR(50),
     @Experience NVARCHAR(50) = NULL,
@@ -46,23 +48,24 @@ END;
 GO
 
 -- Update existing user information
-CREATE PROCEDURE SP_Update_Existing_User
+-- NOTE: @Password parameter should be pre-hashed using SHA256 by the calling application
+CREATE OR ALTER PROCEDURE SP_Update_Existing_User
     @User_ID INT,
     @First_name NVARCHAR(50),
     @Last_name NVARCHAR(50),
     @DOB DATE,
-    @Password NVARCHAR(50),
+    @Password NVARCHAR(255),  
     @email NVARCHAR(50),
     @Experience NVARCHAR(50) = NULL,
     @Specialization NVARCHAR(50) = NULL,
     @Membership_ID INT = NULL
 AS
 BEGIN
-    UPDATE Users 
-    SET First_name = @First_name, 
-        Last_name = @Last_name, 
-        DOB = @DOB, 
-        Password = @Password, 
+    UPDATE Users
+    SET First_name = @First_name,
+        Last_name = @Last_name,
+        DOB = @DOB,
+        Password = @Password,
         email = @email
     WHERE User_ID = @User_ID;
     
@@ -84,9 +87,11 @@ GO
 -- =============================================================================
 
 -- User login validation
-CREATE PROCEDURE SP_User_Login
+-- NOTE: @Password parameter should be pre-hashed using SHA256 by the calling application
+-- The database stores hashed passwords, not plain text
+CREATE OR ALTER PROCEDURE SP_User_Login
     @Username NVARCHAR(50),
-    @Password NVARCHAR(50)
+    @Password NVARCHAR(255) 
 AS
 BEGIN
     IF EXISTS (SELECT 1 FROM Users WHERE Username = @Username)

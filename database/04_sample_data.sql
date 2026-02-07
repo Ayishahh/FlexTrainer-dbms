@@ -94,9 +94,11 @@ GO
 SET IDENTITY_INSERT Users OFF;
 GO
 
+-- NOTE: All passwords are SHA256 hashed. Plain-text equivalents:
+-- alice_smith: admin123 | jessica_lopez: admin456
 INSERT INTO Users (First_name, Last_name, DOB, Username, Password, email, Role, Security_question) VALUES
-('Alice', 'Smith', '1985-03-15', 'alice_smith', 'admin123', 'alice.smith@email.com', 'Admin', 'Roots School'),
-('Jessica', 'Lopez', '1983-06-27', 'jessica_lopez', 'admin456', 'jessica.lopez@email.com', 'Admin', 'Greenfield High');
+('Alice', 'Smith', '1985-03-15', 'alice_smith', 'JAvlGPq9JyTdtvBO6x2llnRI1+gxwIyPqCKAn3THIKk=', 'alice.smith@email.com', 'Admin', 'Roots School'),
+('Jessica', 'Lopez', '1983-06-27', 'jessica_lopez', 'vs938+yCpDQit3EhNNGGDjIFxs53iwhBenOJtD8rRmE=', 'jessica.lopez@email.com', 'Admin', 'Greenfield High');
 GO
 
 -- Get Admin IDs and insert into Admin table (trigger should handle this, but ensure it)
@@ -108,10 +110,11 @@ GO
 -- USERS - GYM OWNERS
 -- =============================================================================
 
+-- NOTE: Plain-text passwords: eva_brown: owner123 | james_williams: owner456 | sophia_martinez: owner789
 INSERT INTO Users (First_name, Last_name, DOB, Username, Password, email, Role, Security_question) VALUES
-('Eva', 'Brown', '1983-11-10', 'eva_brown', 'owner123', 'eva.brown@email.com', 'GymOwner', 'Pinecrest Prep'),
-('James', 'Williams', '1984-07-29', 'james_williams', 'owner456', 'james.williams@email.com', 'GymOwner', 'Riverdale High'),
-('Sophia', 'Martinez', '1985-01-16', 'sophia_martinez', 'owner789', 'sophia.martinez@email.com', 'GymOwner', 'Hilltop Academy');
+('Eva', 'Brown', '1983-11-10', 'eva_brown', 'Q6DRcXip0myeD+mnSwtF440y8nrtiHoAilS/bgM797k=', 'eva.brown@email.com', 'GymOwner', 'Pinecrest Prep'),
+('James', 'Williams', '1984-07-29', 'james_williams', 'k4FM4iMzbdle9aoqymwDJlJmMLJJJZul8r2p4gE94hQ=', 'james.williams@email.com', 'GymOwner', 'Riverdale High'),
+('Sophia', 'Martinez', '1985-01-16', 'sophia_martinez', 'Tmu00+ftb6wd16ibbhTT9kQK9ZdHO5TjWQqqGoEMMDA=', 'sophia.martinez@email.com', 'GymOwner', 'Hilltop Academy');
 GO
 
 INSERT INTO Gym_Owner (GymOwner_ID)
@@ -134,12 +137,13 @@ GO
 -- USERS - TRAINERS
 -- =============================================================================
 
+-- NOTE: Plain-text passwords: bob_johnson: trainer123 | zara_garcia: trainer456 | emily_anderson: trainer789 | daniel_gonzalez: trainer101 | andrew_young: trainer102
 INSERT INTO Users (First_name, Last_name, DOB, Username, Password, email, Role, Security_question) VALUES
-('Bob', 'Johnson', '1988-07-20', 'bob_johnson', 'trainer123', 'bob.johnson@email.com', 'Trainer', 'Palm Beach'),
-('Zara', 'Garcia', '1990-06-05', 'zara_garcia', 'trainer456', 'zara.garcia@email.com', 'Trainer', 'Valley Ridge'),
-('Emily', 'Anderson', '1991-03-18', 'emily_anderson', 'trainer789', 'emily.anderson@email.com', 'Trainer', 'Bayside Prep'),
-('Daniel', 'Gonzalez', '1989-02-08', 'daniel_gonzalez', 'trainer101', 'daniel.gonzalez@email.com', 'Trainer', 'Sunset High'),
-('Andrew', 'Young', '1988-04-03', 'andrew_young', 'trainer102', 'andrew.young@email.com', 'Trainer', 'Liberty High');
+('Bob', 'Johnson', '1988-07-20', 'bob_johnson', 'Wz0mTkzcLDnKZwiz4eIfCCcivhLmPuIUhL2+FXNasGY=', 'bob.johnson@email.com', 'Trainer', 'Palm Beach'),
+('Zara', 'Garcia', '1990-06-05', 'zara_garcia', 'KSmMYxX1JHcBpwJfxtbWEPtjZe6Tpo1Nm9517ZwbVSE=', 'zara.garcia@email.com', 'Trainer', 'Valley Ridge'),
+('Emily', 'Anderson', '1991-03-18', 'emily_anderson', 'c3e4K6/XXh79YV6R3d/w60+vHnzqjNNojK2PshGfeXY=', 'emily.anderson@email.com', 'Trainer', 'Bayside Prep'),
+('Daniel', 'Gonzalez', '1989-02-08', 'daniel_gonzalez', 'p3+4afpAovHSc7o3pF01lQ4NXC6HRzKN7Kg94c//a6Q=', 'daniel.gonzalez@email.com', 'Trainer', 'Sunset High'),
+('Andrew', 'Young', '1988-04-03', 'andrew_young', 'CLjk8Zr1AvZx2cUcI4LMFkz6AibA4fqBWvXM9+rwx9g=', 'andrew.young@email.com', 'Trainer', 'Liberty High');
 GO
 
 INSERT INTO Trainer (Trainer_ID, Experience, Speciality)
@@ -154,17 +158,18 @@ GO
 -- USERS - MEMBERS
 -- =============================================================================
 
+-- NOTE: Plain-text passwords for members: member123-107
 INSERT INTO Users (First_name, Last_name, DOB, Username, Password, email, Role, Security_question) VALUES
-('John', 'Doe', '1990-01-01', 'john_doe', 'member123', 'john.doe@email.com', 'Member', 'Roots School'),
-('Jane', 'Doe', '1992-02-02', 'jane_doe', 'member456', 'jane.doe@email.com', 'Member', 'Greenfield High'),
-('Michael', 'Lee', '1987-09-25', 'michael_lee', 'member789', 'michael.lee@email.com', 'Member', 'Lakeview Academy'),
-('Sarah', 'Wilson', '1990-08-22', 'sarah_wilson', 'member101', 'sarah.wilson@email.com', 'Member', 'Riverdale High'),
-('Kevin', 'Hernandez', '1992-09-14', 'kevin_hernandez', 'member102', 'kevin.hernandez@email.com', 'Member', 'Palm Beach'),
-('Amanda', 'White', '1986-02-11', 'amanda_white', 'member103', 'amanda.white@email.com', 'Member', 'Bayside Prep'),
-('Ryan', 'Clark', '1990-08-20', 'ryan_clark', 'member104', 'ryan.clark@email.com', 'Member', 'Valley Ridge'),
-('Nicole', 'Flores', '1989-06-14', 'nicole_flores', 'member105', 'nicole.flores@email.com', 'Member', 'Sunset High'),
-('Tyler', 'Garcia', '1992-10-18', 'tyler_garcia', 'member106', 'tyler.garcia@email.com', 'Member', 'North Shore'),
-('Hannah', 'Gonzalez', '1989-07-19', 'hannah_gonzalez', 'member107', 'hannah.gonzalez@email.com', 'Member', 'Evergreen High');
+('John', 'Doe', '1990-01-01', 'john_doe', 'VgA3boY9L1egU1GPMkrThAsLwjSLVzrygae3y+eiKMY=', 'john.doe@email.com', 'Member', 'Roots School'),
+('Jane', 'Doe', '1992-02-02', 'jane_doe', 'wjVjCy378fT9c9ZOAePMZtE6fzWLAeIA6Dy2Bwg/sZU=', 'jane.doe@email.com', 'Member', 'Greenfield High'),
+('Michael', 'Lee', '1987-09-25', 'michael_lee', 'nMH4AIy9h6qMqi0aMq6MlCoU9qbxIPPLUeINyxY5UPM=', 'michael.lee@email.com', 'Member', 'Lakeview Academy'),
+('Sarah', 'Wilson', '1990-08-22', 'sarah_wilson', 't/9A21ihkATnxQNFu8IYTq8R/7lqZxSKOUs9EetmV7E=', 'sarah.wilson@email.com', 'Member', 'Riverdale High'),
+('Kevin', 'Hernandez', '1992-09-14', 'kevin_hernandez', 'raljqiCXR+SR/Td//EOkVXwJf44W3pJlAgt5aWf5Ed4=', 'kevin.hernandez@email.com', 'Member', 'Palm Beach'),
+('Amanda', 'White', '1986-02-11', 'amanda_white', 'UQ4s6mBL3xXwRMsqA3JLPvnDFyEKEYDSawsIVgEqaYg=', 'amanda.white@email.com', 'Member', 'Bayside Prep'),
+('Ryan', 'Clark', '1990-08-20', 'ryan_clark', 'YA+duPv5+W59OFlfyxLy8xv2xPwgOAHhd7TDqOmrDXs=', 'ryan.clark@email.com', 'Member', 'Valley Ridge'),
+('Nicole', 'Flores', '1989-06-14', 'nicole_flores', 'Gb6HsUIHjL6pTbPqt2zgr7qdupbnYtqx149OtFe3rAg=', 'nicole.flores@email.com', 'Member', 'Sunset High'),
+('Tyler', 'Garcia', '1992-10-18', 'tyler_garcia', 'yQd7dOoXEGSHgAmpyqulNVTF4CcbAS2nUZ+NDF15GzE=', 'tyler.garcia@email.com', 'Member', 'North Shore'),
+('Hannah', 'Gonzalez', '1989-07-19', 'hannah_gonzalez', 'PGDHVKYb+YgXZ/ihyXWAV06nx0dRQO4YSYEDZyqGy1s=', 'hannah.gonzalez@email.com', 'Member', 'Evergreen High');
 GO
 
 INSERT INTO Member (Member_ID, Membership_ID, Gym_ID)
