@@ -2,7 +2,7 @@ using Project;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace DB_phase2_project
+namespace FlexTrainer
 {
     public partial class LogIn : Form
     {
@@ -31,26 +31,32 @@ namespace DB_phase2_project
 
         private void button2_Click(object sender, EventArgs e)
         {
-            conn.Open();
-
-            SqlCommand cm = new SqlCommand("SP_User_Login", conn);
-            cm.CommandType = CommandType.StoredProcedure;
-            cm.Parameters.Add(new SqlParameter("@Username", textBox1.Text));
-            cm.Parameters.Add(new SqlParameter("@Password", textBox2.Text));
-
-            string loginStatus = string.Empty;
-
-            using (SqlDataReader reader = cm.ExecuteReader())
+            try
             {
-                if (reader.Read())
+                string loginStatus = string.Empty;
+                
+                using (conn)
                 {
-                    loginStatus = reader.GetString(0);
-                }
-            }
+                    conn.Open();
 
-            conn.Close();
+                    // Hash the password before sending to database
+                    string hashedPassword = PasswordHelper.HashPassword(textBox2.Text);
 
-            switch (loginStatus)
+                    SqlCommand cm = new SqlCommand("SP_User_Login", conn);
+                    cm.CommandType = CommandType.StoredProcedure;
+                    cm.Parameters.Add(new SqlParameter("@Username", textBox1.Text));
+                    cm.Parameters.Add(new SqlParameter("@Password", hashedPassword));
+
+                    using (SqlDataReader reader = cm.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            loginStatus = reader.GetString(0);
+                        }
+                    }
+                }  // Connection auto-closes here
+
+                switch (loginStatus)
             {
                 case "Member":
                     USER_NAME = textBox1.Text;
@@ -85,6 +91,11 @@ namespace DB_phase2_project
                 default:
                     MessageBox.Show("An unexpected error occurred.");
                     break;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Login error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

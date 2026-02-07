@@ -9,11 +9,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace DB_phase2_project
+namespace FlexTrainer
 {
     public partial class GApplication : Form
     {
-        SqlConnection conn = new SqlConnection(DatabaseHelper.ConnectionString);
         public GApplication()
         {
             InitializeComponent();
@@ -67,6 +66,9 @@ namespace DB_phase2_project
                 }
 
 
+                // Hash password before storing
+                string hashedPassword = PasswordHelper.HashPassword(pass);
+
                 storedProcedure = "SP_Add_New_User";
                 using (SqlCommand cm = new SqlCommand(storedProcedure, conn))
                 {
@@ -75,7 +77,7 @@ namespace DB_phase2_project
                     cm.Parameters.AddWithValue("@Last_name", lname);
                     cm.Parameters.AddWithValue("@DOB", dob);
                     cm.Parameters.AddWithValue("@Username", un);
-                    cm.Parameters.AddWithValue("@Password", pass);
+                    cm.Parameters.AddWithValue("@Password", hashedPassword);
                     cm.Parameters.AddWithValue("@email", email);
                     cm.Parameters.AddWithValue("@Role", role);
                     cm.Parameters.AddWithValue("@Experience", exp);

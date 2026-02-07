@@ -3,7 +3,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
 
-namespace DB_phase2_project
+namespace FlexTrainer
 {
     public partial class TrainerDashboard : Form
     {

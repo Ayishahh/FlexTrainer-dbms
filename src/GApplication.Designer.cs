@@ -1,4 +1,4 @@
-﻿namespace DB_phase2_project
+﻿namespace FlexTrainer
 {
     partial class GApplication
     {

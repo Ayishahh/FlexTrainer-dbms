@@ -1,4 +1,4 @@
-using DB_phase2_project;
+using FlexTrainer;
 using System.Data.SqlClient;
 using System.Data;
 using System.Security.Cryptography;
@@ -268,8 +268,10 @@ namespace Project
             using (SqlConnection conn = new SqlConnection(connection_string))
             {
                 conn.Open();
-                using (SqlCommand cmd = new SqlCommand("SELECT Gym_ID, Gym_name FROM Gym WHERE GymOwner_ID = (SELECT User_ID FROM Users WHERE Username like '" + LogIn.USER_NAME + "')", conn)) // previous trainers
+                using (SqlCommand cmd = new SqlCommand("SELECT Gym_ID, Gym_name FROM Gym WHERE GymOwner_ID = (SELECT User_ID FROM Users WHERE Username = @Username)", conn)) // previous trainers
                 {
+                    cmd.Parameters.AddWithValue("@Username", LogIn.USER_NAME);
+
                     // Initialize SqlDataAdapter and DataTable
                     SqlDataAdapter sda = new SqlDataAdapter(cmd);
                     DataTable dt = new DataTable();
@@ -364,8 +366,9 @@ namespace Project
             using (SqlConnection conn = new SqlConnection(connection_string))
             {
                 conn.Open();
-                string query = "Select* from Gym where Gym_name = '" + comboBox18.Text + "'";
+                string query = "Select* from Gym where Gym_name = @GymName";
                 SqlCommand cm1 = new SqlCommand(query, conn);
+                cm1.Parameters.AddWithValue("@GymName", comboBox18.Text);
                 SqlDataReader reader1 = cm1.ExecuteReader();
                 if (reader1.Read())
                 {
@@ -376,8 +379,10 @@ namespace Project
                 }
                 reader1.Close();
 
-                using (SqlCommand cmd = new SqlCommand("SELECT Member_ID FROM Member WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name like '" + comboBox18.Text + "')", conn)) // previous trainers
+                using (SqlCommand cmd = new SqlCommand("SELECT Member_ID FROM Member WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = @GymName)", conn)) // previous trainers
                 {
+                    cmd.Parameters.AddWithValue("@GymName", comboBox18.Text);
+
                     // Initialize SqlDataAdapter and DataTable
                     SqlDataAdapter sda = new SqlDataAdapter(cmd);
                     DataTable dt = new DataTable();
@@ -389,8 +394,10 @@ namespace Project
                     comboBox2.DisplayMember = "Member_ID";
                 }
 
-                using (SqlCommand cmd = new SqlCommand("SELECT Trainer_ID FROM Works_for WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name like '" + comboBox18.Text + "')", conn)) // previous trainers
+                using (SqlCommand cmd = new SqlCommand("SELECT Trainer_ID FROM Works_for WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = @GymName)", conn)) // previous trainers
                 {
+                    cmd.Parameters.AddWithValue("@GymName", comboBox18.Text);
+
                     // Initialize SqlDataAdapter and DataTable
                     SqlDataAdapter sda = new SqlDataAdapter(cmd);
                     DataTable dt = new DataTable();
@@ -490,9 +497,10 @@ namespace Project
             using (SqlConnection conn = new SqlConnection(connection_string))
             {
                 conn.Open();
-                string query = "SELECT Trainer_ID FROM Works_For WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = '" + comboBox7.Text + "')";
+                string query = "SELECT Trainer_ID FROM Works_For WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = @GymName)";
                 using (SqlCommand cm = new SqlCommand(query, conn))
                 {
+                    cm.Parameters.AddWithValue("@GymName", comboBox7.Text);
 
                     SqlDataAdapter sda = new SqlDataAdapter(cm);
                     DataTable dt = new DataTable();
@@ -513,8 +521,9 @@ namespace Project
             using (SqlConnection conn = new SqlConnection(connection_string))
             {
                 conn.Open();
-                string query = "Select* from Users where User_ID = " + comboBox4.Text.ToString();
+                string query = "Select* from Users where User_ID = @UserID";
                 SqlCommand cm1 = new SqlCommand(query, conn);
+                cm1.Parameters.AddWithValue("@UserID", Convert.ToInt32(comboBox4.Text));
                 SqlDataReader reader1 = cm1.ExecuteReader();
                 if (reader1.Read())
                 {
@@ -527,8 +536,9 @@ namespace Project
                 }
                 reader1.Close();
 
-                query = "Select* from Trainer where Trainer_ID = " + comboBox4.Text.ToString();
+                query = "Select* from Trainer where Trainer_ID = @TrainerID";
                 cm1 = new SqlCommand(query, conn);
+                cm1.Parameters.AddWithValue("@TrainerID", Convert.ToInt32(comboBox4.Text));
                 SqlDataReader reader2 = cm1.ExecuteReader();
                 if (reader2.Read())
                 {
@@ -546,9 +556,10 @@ namespace Project
             using (SqlConnection conn = new SqlConnection(connection_string))
             {
                 conn.Open();
-                string query = "SELECT Member_ID FROM Member WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = '" + comboBox5.Text + "')";
+                string query = "SELECT Member_ID FROM Member WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = @GymName)";
                 using (SqlCommand cm = new SqlCommand(query, conn))
                 {
+                    cm.Parameters.AddWithValue("@GymName", comboBox5.Text);
 
                     SqlDataAdapter sda = new SqlDataAdapter(cm);
                     DataTable dt = new DataTable();
@@ -654,9 +665,10 @@ namespace Project
             using (SqlConnection conn = new SqlConnection(connection_string))
             {
                 conn.Open();
-                string query = "SELECT Trainer_ID FROM Works_For WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = '" + comboBox14.Text + "')";
+                string query = "SELECT Trainer_ID FROM Works_For WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = @GymName)";
                 using (SqlCommand cm = new SqlCommand(query, conn))
                 {
+                    cm.Parameters.AddWithValue("@GymName", comboBox14.Text);
 
                     SqlDataAdapter sda = new SqlDataAdapter(cm);
                     DataTable dt = new DataTable();

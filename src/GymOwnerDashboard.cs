@@ -14,7 +14,7 @@ using System.Xml.Linq;
 using static System.ComponentModel.Design.ObjectSelectorEditor;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
-namespace DB_phase2_project
+namespace FlexTrainer
 {
     public partial class GymOwnerDashboard : Form
     {
@@ -71,8 +71,10 @@ namespace DB_phase2_project
             {
                 conn.Open();
 
-                using (SqlCommand cmd = new SqlCommand("SELECT Gym_ID, Gym_name FROM Gym WHERE GymOwner_ID = (SELECT User_ID FROM Users WHERE Username = '" + LogIn.USER_NAME + "')", conn)) // previous trainers
+                using (SqlCommand cmd = new SqlCommand("SELECT Gym_ID, Gym_name FROM Gym WHERE GymOwner_ID = (SELECT User_ID FROM Users WHERE Username = @Username)", conn)) // previous trainers
                 {
+                    cmd.Parameters.AddWithValue("@Username", LogIn.USER_NAME);
+
                     // Initialize SqlDataAdapter and DataTable
                     SqlDataAdapter sda = new SqlDataAdapter(cmd);
                     DataTable dt = new DataTable();
@@ -113,8 +115,9 @@ namespace DB_phase2_project
                     comboBox1.DisplayMember = "Member_ID";
                 }
 
-                string query = "Select* from Users where username = '" + LogIn.USER_NAME + "'";
+                string query = "Select* from Users where username = @Username";
                 SqlCommand cm1 = new SqlCommand(query, conn);
+                cm1.Parameters.AddWithValue("@Username", LogIn.USER_NAME);
                 SqlDataReader reader1 = cm1.ExecuteReader();
                 if (reader1.Read())
                 {
@@ -128,8 +131,9 @@ namespace DB_phase2_project
                 }
                 reader1.Close();
 
-                string query1 = "SELECT Gym_name FROM Gym WHERE GymOwner_ID = (SELECT User_ID FROM Users WHERE Username = '" + LogIn.USER_NAME + "')";
+                string query1 = "SELECT Gym_name FROM Gym WHERE GymOwner_ID = (SELECT User_ID FROM Users WHERE Username = @Username)";
                 SqlCommand cm2 = new SqlCommand(query1, conn);
+                cm2.Parameters.AddWithValue("@Username", LogIn.USER_NAME);
                 SqlDataReader reader2 = cm2.ExecuteReader();
                 if (reader2.Read())
                 {
@@ -150,8 +154,9 @@ namespace DB_phase2_project
             using (SqlConnection conn = new SqlConnection(connection_string))
             {
                 conn.Open();
-                string query = "Select* from Users where User_ID = " + comboBox2.Text.ToString();
+                string query = "Select* from Users where User_ID = @UserID";
                 SqlCommand cm1 = new SqlCommand(query, conn);
+                cm1.Parameters.AddWithValue("@UserID", Convert.ToInt32(comboBox2.Text));
                 SqlDataReader reader1 = cm1.ExecuteReader();
                 if (reader1.Read())
                 {
@@ -162,8 +167,9 @@ namespace DB_phase2_project
                 }
                 reader1.Close();
 
-                query = "Select* from Membership where Membership_ID = (Select Membership_ID from Member where Member_ID = " + comboBox2.Text.ToString() + ")";
+                query = "Select* from Membership where Membership_ID = (Select Membership_ID from Member where Member_ID = @MemberID)";
                 cm1 = new SqlCommand(query, conn);
+                cm1.Parameters.AddWithValue("@MemberID", Convert.ToInt32(comboBox2.Text));
                 SqlDataReader reader2 = cm1.ExecuteReader();
                 if (reader2.Read())
                 {
@@ -186,9 +192,10 @@ namespace DB_phase2_project
             using (SqlConnection conn = new SqlConnection(connection_string))
             {
                 conn.Open();
-                string query = "SELECT Trainer_ID FROM Works_For WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = '" + Gym_name.Text + "')";
+                string query = "SELECT Trainer_ID FROM Works_For WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = @GymName)";
                 using (SqlCommand cm = new SqlCommand(query, conn))
                 {
+                    cm.Parameters.AddWithValue("@GymName", Gym_name.Text);
 
                     SqlDataAdapter sda = new SqlDataAdapter(cm);
                     DataTable dt = new DataTable();
@@ -234,8 +241,9 @@ namespace DB_phase2_project
             using (SqlConnection conn = new SqlConnection(connection_string))
             {
                 conn.Open();
-                string query = "Select* from Users where User_ID = " + comboBox6.Text.ToString();
+                string query = "Select* from Users where User_ID = @UserID";
                 SqlCommand cm1 = new SqlCommand(query, conn);
+                cm1.Parameters.AddWithValue("@UserID", Convert.ToInt32(comboBox6.Text));
                 SqlDataReader reader1 = cm1.ExecuteReader();
                 if (reader1.Read())
                 {
@@ -247,8 +255,9 @@ namespace DB_phase2_project
                 }
                 reader1.Close();
 
-                query = "Select* from Trainer where Trainer_ID = " + comboBox6.Text.ToString();
+                query = "Select* from Trainer where Trainer_ID = @TrainerID";
                 cm1 = new SqlCommand(query, conn);
+                cm1.Parameters.AddWithValue("@TrainerID", Convert.ToInt32(comboBox6.Text));
                 SqlDataReader reader2 = cm1.ExecuteReader();
                 if (reader2.Read())
                 {
@@ -267,8 +276,9 @@ namespace DB_phase2_project
             {
                 conn.Open();
 
-                string query = "select Gym_ID from gym where Gym_name = '" + gym.Text + "'";
+                string query = "select Gym_ID from gym where Gym_name = @GymName";
                 SqlCommand cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@GymName", gym.Text);
                 string gymid = cmd.ExecuteScalar().ToString();
                 cmd.Dispose();
 
@@ -308,9 +318,11 @@ namespace DB_phase2_project
             using (SqlConnection conn = new SqlConnection(connection_string))
             {
                 conn.Open();
-                string query = "SELECT Member_ID FROM Member WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = '" + comboBox5.Text + "')";
+                string query = "SELECT Member_ID FROM Member WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = @GymName)";
                 using (SqlCommand cm = new SqlCommand(query, conn))
                 {
+                    cm.Parameters.AddWithValue("@GymName", comboBox5.Text);
+
                     SqlDataAdapter sda = new SqlDataAdapter(cm);
                     DataTable dt = new DataTable();
                     sda.Fill(dt);
@@ -330,8 +342,10 @@ namespace DB_phase2_project
             using (SqlConnection conn = new SqlConnection(connection_string))
             {
                 conn.Open();
-                using (SqlCommand cmd = new SqlCommand("SELECT Request_ID FROM Trainer_Requests WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = '" + comboBox7.Text + "') AND Request_status = 'Pending'", conn)) // previous trainers
+                using (SqlCommand cmd = new SqlCommand("SELECT Request_ID FROM Trainer_Requests WHERE Gym_ID = (SELECT Gym_ID FROM Gym WHERE Gym_name = @GymName) AND Request_status = 'Pending'", conn)) // previous trainers
                 {
+                    cmd.Parameters.AddWithValue("@GymName", comboBox7.Text);
+
                     // Initialize SqlDataAdapter and DataTable
                     SqlDataAdapter sda = new SqlDataAdapter(cmd);
                     DataTable dt = new DataTable();
@@ -350,8 +364,9 @@ namespace DB_phase2_project
             using (SqlConnection conn = new SqlConnection(connection_string))
             {
                 conn.Open();
-                string query = "SELECT Users.First_name, Users.Last_name, Users.email, Users.Username, Users.DOB, Trainer.Experience, Trainer.Speciality FROM Users JOIN Trainer ON Users.User_ID = Trainer.Trainer_ID WHERE Trainer.Trainer_ID = (SELECT Trainer_ID FROM Trainer_Requests WHERE Request_ID = " + comboBox8.Text.ToString() + ")";
+                string query = "SELECT Users.First_name, Users.Last_name, Users.email, Users.Username, Users.DOB, Trainer.Experience, Trainer.Speciality FROM Users JOIN Trainer ON Users.User_ID = Trainer.Trainer_ID WHERE Trainer.Trainer_ID = (SELECT Trainer_ID FROM Trainer_Requests WHERE Request_ID = @RequestID)";
                 SqlCommand cm1 = new SqlCommand(query, conn);
+                cm1.Parameters.AddWithValue("@RequestID", Convert.ToInt32(comboBox8.Text));
                 SqlDataReader reader1 = cm1.ExecuteReader();
                 if (reader1.Read())
                 {
@@ -379,22 +394,27 @@ namespace DB_phase2_project
             {
                 conn.Open();
                 SqlCommand cm;
-                string query = "UPDATE Trainer_Requests SET Request_status = 'Approved' WHERE Request_ID = " + comboBox8.Text;
+                string query = "UPDATE Trainer_Requests SET Request_status = 'Approved' WHERE Request_ID = @RequestID";
                 cm = new SqlCommand(query, conn);
+                cm.Parameters.AddWithValue("@RequestID", Convert.ToInt32(comboBox8.Text));
                 cm.ExecuteNonQuery();
 
-                string q1 = "SELECT Gym_ID FROM Gym WHERE Gym_name = '" + comboBox7.Text + "'";
+                string q1 = "SELECT Gym_ID FROM Gym WHERE Gym_name = @GymName";
                 SqlCommand cmd = new SqlCommand(q1, conn);
+                cmd.Parameters.AddWithValue("@GymName", comboBox7.Text);
                 string gymid = cmd.ExecuteScalar().ToString();
                 cmd.Dispose();
 
-                string q2 = "SELECT User_ID FROM Users WHERE Username = '" + textBox12.Text + "'";
+                string q2 = "SELECT User_ID FROM Users WHERE Username = @Username";
                 SqlCommand c2 = new SqlCommand(q2, conn);
+                c2.Parameters.AddWithValue("@Username", textBox12.Text);
                 string tid = c2.ExecuteScalar().ToString();
                 c2.Dispose();
 
-                query = "INSERT INTO Works_for VALUES (" + gymid + "," + tid + ")";
+                query = "INSERT INTO Works_for VALUES (@GymID, @TrainerID)";
                 SqlCommand c3 = new SqlCommand(query, conn);
+                c3.Parameters.AddWithValue("@GymID", Convert.ToInt32(gymid));
+                c3.Parameters.AddWithValue("@TrainerID", Convert.ToInt32(tid));
                 c3.ExecuteNonQuery();
                 c3.Dispose();
 
@@ -410,8 +430,9 @@ namespace DB_phase2_project
             {
                 conn.Open();
                 SqlCommand cm;
-                string query = "Update Trainer_Requests Set Request_status = 'Rejected' where Request_ID = " + comboBox8.Text;
+                string query = "Update Trainer_Requests Set Request_status = 'Rejected' where Request_ID = @RequestID";
                 cm = new SqlCommand(query, conn);
+                cm.Parameters.AddWithValue("@RequestID", Convert.ToInt32(comboBox8.Text));
                 cm.ExecuteNonQuery();
                 MessageBox.Show("Trainer Request Rejected! \n    -- Statud updated -- ");
                 cm.Dispose();
