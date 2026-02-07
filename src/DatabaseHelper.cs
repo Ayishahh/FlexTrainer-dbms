@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Text;
+using System.Windows.Forms;
 
 namespace FlexTrainer
 {
@@ -13,6 +14,7 @@ namespace FlexTrainer
     public static class DatabaseHelper
     {
         private static string _connectionString;
+        private const string ServerPlaceholder = "YOUR_SERVER_IP";
 
         /// <summary>
         /// Gets the database connection string from App.config.
@@ -55,6 +57,134 @@ namespace FlexTrainer
                 
                 return _connectionString;
             }
+        }
+
+        public static void EnsureServerConfigured()
+        {
+            var connString = ConfigurationManager.ConnectionStrings["FlexTrainerDB"]?.ConnectionString;
+            if (string.IsNullOrWhiteSpace(connString))
+            {
+                return;
+            }
+
+            var builder = new SqlConnectionStringBuilder(connString);
+            if (!NeedsServerConfiguration(builder))
+            {
+                _connectionString = builder.ConnectionString;
+                return;
+            }
+
+            while (true)
+            {
+                var serverInput = PromptForServerIp(builder.DataSource);
+                if (serverInput == null)
+                {
+                    throw new InvalidOperationException("Database server configuration was cancelled.");
+                }
+
+                if (string.IsNullOrWhiteSpace(serverInput))
+                {
+                    MessageBox.Show("Please enter a valid server IP or name.", "Invalid Input",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    continue;
+                }
+
+                var dataSource = NormalizeDataSource(serverInput, builder.DataSource);
+                builder.DataSource = dataSource;
+
+                UpdateConnectionString(builder.ConnectionString);
+                _connectionString = builder.ConnectionString;
+                break;
+            }
+        }
+
+        private static bool NeedsServerConfiguration(SqlConnectionStringBuilder builder)
+        {
+            return string.IsNullOrWhiteSpace(builder.DataSource) ||
+                   builder.DataSource.Contains(ServerPlaceholder, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string NormalizeDataSource(string input, string existingDataSource)
+        {
+            var dataSource = input.Trim();
+            if (!dataSource.Contains(",") && !dataSource.Contains("\\"))
+            {
+                var commaIndex = existingDataSource.IndexOf(',');
+                if (commaIndex > -1)
+                {
+                    dataSource = dataSource + existingDataSource.Substring(commaIndex);
+                }
+            }
+
+            return dataSource;
+        }
+
+        private static void UpdateConnectionString(string connectionString)
+        {
+            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            var settings = config.ConnectionStrings.ConnectionStrings["FlexTrainerDB"];
+            if (settings == null)
+            {
+                throw new InvalidOperationException("FlexTrainerDB connection string is missing in App.config.");
+            }
+
+            settings.ConnectionString = connectionString;
+            config.Save(ConfigurationSaveMode.Modified);
+            ConfigurationManager.RefreshSection("connectionStrings");
+        }
+
+        private static string? PromptForServerIp(string currentValue)
+        {
+            using var form = new Form
+            {
+                Text = "Configure Database Server",
+                StartPosition = FormStartPosition.CenterScreen,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                MaximizeBox = false,
+                MinimizeBox = false,
+                ClientSize = new System.Drawing.Size(540, 180)
+            };
+
+            var label = new Label
+            {
+                Text = "Enter database server IP (optionally with port):",
+                AutoSize = true,
+                Location = new System.Drawing.Point(12, 12)
+            };
+
+            var textBox = new TextBox
+            {
+                Location = new System.Drawing.Point(15, 45),
+                Size = new System.Drawing.Size(505, 27),
+                Text = currentValue?.Contains(ServerPlaceholder, StringComparison.OrdinalIgnoreCase) == true
+                    ? string.Empty
+                    : currentValue
+            };
+
+            var okButton = new Button
+            {
+                Text = "Save",
+                DialogResult = DialogResult.OK,
+                Location = new System.Drawing.Point(345, 110),
+                Size = new System.Drawing.Size(85, 32)
+            };
+
+            var cancelButton = new Button
+            {
+                Text = "Cancel",
+                DialogResult = DialogResult.Cancel,
+                Location = new System.Drawing.Point(435, 110),
+                Size = new System.Drawing.Size(85, 32)
+            };
+
+            form.Controls.Add(label);
+            form.Controls.Add(textBox);
+            form.Controls.Add(okButton);
+            form.Controls.Add(cancelButton);
+            form.AcceptButton = okButton;
+            form.CancelButton = cancelButton;
+
+            return form.ShowDialog() == DialogResult.OK ? textBox.Text : null;
         }
 
         /// <summary>
